@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import rospy
-import geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist
 from cs1567p1.srv import *
 from std_srvs.srv import * 
 
@@ -78,11 +78,12 @@ def move_forward():
     global current_pos
     
     try:
-        command.linear.x = 0.25
+        command.linear.x = 0.1
         response = constant_command_service(command)
-        rospy.sleep(2.4)
+        rospy.sleep(6.2)
         command.linear.x = 0.0
         response = constant_command_service(command)
+        rospy.sleep(0.5)
         
         if facing == LEFT:
             current_pos = (current_pos[0]-1,current_pos[1])
@@ -98,22 +99,24 @@ def move_forward():
     
 def turn_left():
     global facing
-    command.angular.z = 1.5
+    command.angular.z = 0.5
     response = constant_command_service(command)
-    rospy.sleep(1.5)
+    rospy.sleep(5.4)
     command.angular.z = 0.0
     response = constant_command_service(command)
+    rospy.sleep(0.5)
 
     facing = getNextLeftDirection()
 
 
 def turn_right():
     global facing
-    command.angular.z = -1.5
+    command.angular.z = -0.5
     response = constant_command_service(command)
-    rospy.sleep(1.5)
+    rospy.sleep(5.295)
     command.angular.z = 0.0
     response = constant_command_service(command)
+    rospy.sleep(0.5)
 
     facing = getNextRightDirection()
         
