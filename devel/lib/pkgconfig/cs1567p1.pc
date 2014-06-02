@@ -1,0 +1,8 @@
+prefix=/home/clinton/cs1567_ws/devel
+
+Name: cs1567p1
+Description: Description of cs1567p1
+Version: 0.0.0
+Cflags: -I/home/clinton/cs1567_ws/devel/include
+Libs: -L/home/clinton/cs1567_ws/devel/lib 
+Requires: message_runtime kobuki_node roscpp rospy std_msgs std_srvs geometry_msgs

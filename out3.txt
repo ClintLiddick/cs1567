@@ -1,0 +1,344 @@
+[INFO] [WallTime: 1401734379.359168] position: (0,0)
+[INFO] [WallTime: 1401734379.359830] facing: 3
+res 0
+res 0
+res 1
+left: False forward: False right: True
+res 0
+[INFO] [WallTime: 1401734379.382160] position: (1,0)
+[INFO] [WallTime: 1401734379.382744] facing: 1
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734379.411716] position: (1,1)
+[INFO] [WallTime: 1401734379.412297] facing: 3
+res 1
+res 1
+res 1
+left: True forward: True right: True
+res 1
+res 1
+res 1
+[INFO] [WallTime: 1401734379.444086] position: (1,1)
+[INFO] [WallTime: 1401734379.444770] facing: 1
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.466156] position: (1,0)
+[INFO] [WallTime: 1401734379.466733] facing: 2
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.492872] position: (0,0)
+[INFO] [WallTime: 1401734379.493492] facing: 0
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.514066] position: (0,1)
+[INFO] [WallTime: 1401734379.514643] facing: 3
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734379.540553] position: (0,2)
+[INFO] [WallTime: 1401734379.541211] facing: 3
+res 0
+res 0
+res 1
+left: False forward: False right: True
+res 0
+[INFO] [WallTime: 1401734379.563547] position: (1,2)
+[INFO] [WallTime: 1401734379.564452] facing: 1
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734379.594335] position: (1,3)
+[INFO] [WallTime: 1401734379.595066] facing: 3
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.615200] position: (2,3)
+[INFO] [WallTime: 1401734379.615915] facing: 1
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.637498] position: (2,2)
+[INFO] [WallTime: 1401734379.638387] facing: 2
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734379.663866] position: (2,1)
+[INFO] [WallTime: 1401734379.664809] facing: 2
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734379.689878] position: (2,0)
+[INFO] [WallTime: 1401734379.690635] facing: 2
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734379.720300] position: (3,0)
+[INFO] [WallTime: 1401734379.721422] facing: 1
+res 1
+res 0
+res 0
+left: True forward: False right: False
+res 1
+res 0
+[INFO] [WallTime: 1401734379.747626] position: (4,0)
+[INFO] [WallTime: 1401734379.748369] facing: 1
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734379.779472] position: (4,1)
+[INFO] [WallTime: 1401734379.780380] facing: 3
+res 1
+res 1
+res 1
+left: True forward: True right: True
+res 1
+res 1
+res 1
+[INFO] [WallTime: 1401734379.810125] position: (4,1)
+[INFO] [WallTime: 1401734379.810843] facing: 1
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.832380] position: (4,0)
+[INFO] [WallTime: 1401734379.833254] facing: 2
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.854824] position: (3,0)
+[INFO] [WallTime: 1401734379.855547] facing: 0
+res 0
+res 0
+res 1
+left: False forward: False right: True
+res 0
+[INFO] [WallTime: 1401734379.877132] position: (3,1)
+[INFO] [WallTime: 1401734379.877852] facing: 3
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734379.901962] position: (3,2)
+[INFO] [WallTime: 1401734379.902675] facing: 3
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.923125] position: (4,2)
+[INFO] [WallTime: 1401734379.924007] facing: 1
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734379.943770] position: (4,3)
+[INFO] [WallTime: 1401734379.944139] facing: 3
+res 1
+res 1
+res 1
+left: True forward: True right: True
+res 1
+res 1
+res 1
+[INFO] [WallTime: 1401734379.956009] position: (4,3)
+[INFO] [WallTime: 1401734379.956517] facing: 1
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.966106] position: (4,2)
+[INFO] [WallTime: 1401734379.966556] facing: 2
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734379.977498] position: (3,2)
+[INFO] [WallTime: 1401734379.977929] facing: 0
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734379.997319] position: (3,1)
+[INFO] [WallTime: 1401734379.997811] facing: 2
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734380.014977] position: (3,0)
+[INFO] [WallTime: 1401734380.015489] facing: 2
+res 0
+res 1
+res 0
+left: False forward: True right: False
+res 0
+[INFO] [WallTime: 1401734380.029374] position: (2,0)
+[INFO] [WallTime: 1401734380.029873] facing: 0
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734380.039274] position: (2,1)
+[INFO] [WallTime: 1401734380.039571] facing: 3
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734380.049427] position: (2,2)
+[INFO] [WallTime: 1401734380.049719] facing: 3
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734380.059905] position: (2,3)
+[INFO] [WallTime: 1401734380.060236] facing: 3
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734380.075414] position: (1,3)
+[INFO] [WallTime: 1401734380.076030] facing: 0
+res 1
+res 1
+res 0
+left: True forward: True right: False
+res 1
+res 1
+res 0
+[INFO] [WallTime: 1401734380.090542] position: (1,2)
+[INFO] [WallTime: 1401734380.090889] facing: 2
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734380.099209] position: (0,2)
+[INFO] [WallTime: 1401734380.099507] facing: 0
+res 0
+res 1
+res 0
+left: False forward: True right: False
+res 0
+[INFO] [WallTime: 1401734380.107826] position: (0,3)
+[INFO] [WallTime: 1401734380.108251] facing: 3
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734380.119665] position: (0,4)
+[INFO] [WallTime: 1401734380.120017] facing: 3
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734380.129742] position: (1,4)
+[INFO] [WallTime: 1401734380.130114] facing: 1
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734380.139832] position: (2,4)
+[INFO] [WallTime: 1401734380.140208] facing: 1
+res 1
+res 0
+res 1
+left: True forward: False right: True
+res 1
+res 0
+[INFO] [WallTime: 1401734380.150071] position: (3,4)
+[INFO] [WallTime: 1401734380.150361] facing: 1
+res 0
+res 0
+res 1
+left: False forward: False right: True
+res 0
+[INFO] [WallTime: 1401734380.159883] position: (3,3)
+[INFO] [WallTime: 1401734380.160240] facing: 2
+res 1
+res 1
+res 1
+left: True forward: True right: True
+res 1
+res 1
+res 1
+[INFO] [WallTime: 1401734380.176951] position: (3,3)
+[INFO] [WallTime: 1401734380.177556] facing: 0
+res 0
+res 1
+res 1
+left: False forward: True right: True
+res 0
+[INFO] [WallTime: 1401734380.192272] position: (3,4)
+[INFO] [WallTime: 1401734380.192914] facing: 3
+res 0
+res 1
+res 0
+left: False forward: True right: False
+res 0
+[INFO] [WallTime: 1401734380.204354] final position: (4,4)

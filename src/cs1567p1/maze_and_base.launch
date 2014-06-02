@@ -1,0 +1,5 @@
+<launch>
+<include file="$(find kobuki_node)/launch/minimal.launch"/>
+<node name="ConstantCommand" pkg="cs1567p0" type="ConstantCommand.py"/>
+<node name="MazeGenerator" pkg="cs1567p1" type="MazeGenerator.py" output="screen"/>
+</launch>
