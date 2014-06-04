@@ -20,6 +20,7 @@ make_maze_service = None
 print_maze_service = None
 get_wall_service = None
 constant_command_service = None
+pub = None
 
 command = Twist()
 
@@ -90,6 +91,9 @@ def move_forward():
         response = constant_command_service(command)
         rospy.sleep(0.5)
         
+        rospy.loginfo("forward x: {} y: {}".format(x_displacement,y_displacement))
+        pub.publish(Empty())
+        
         if facing == LEFT:
             current_pos = (current_pos[0]-1,current_pos[1])
         elif facing == RIGHT:
@@ -104,13 +108,17 @@ def move_forward():
     
 def turn_left():
     global facing
+    
     command.angular.z = 0.5
     response = constant_command_service(command)
     rospy.sleep(5.4)
     command.angular.z = 0.0
     response = constant_command_service(command)
     rospy.sleep(0.5)
-
+    
+    rospy.loginfo("left turn theta: {}".format(theta_displacement))
+    pub.publish(Empty())
+    
     facing = getNextLeftDirection()
 
 
@@ -122,6 +130,9 @@ def turn_right():
     command.angular.z = 0.0
     response = constant_command_service(command)
     rospy.sleep(0.5)
+    
+    rospy.loginfo("right turn theta: {}".format(theta_displacement))
+    pub.publish(Empty())
 
     facing = getNextRightDirection()
         
@@ -173,6 +184,7 @@ def initialize_commands():
     rospy.wait_for_service('get_wall')
     rospy.wait_for_service('constant_command')
     # odometry
+    global pub
     pub = rospy.Publisher('/mobile_base/commands/reset_odometry', Empty, queue_size=10)
     rospy.Subscriber('/odom', Odometry, odometry_callback)
     while (pub.get_num_connections() <= 0):
