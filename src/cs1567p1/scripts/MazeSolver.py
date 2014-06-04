@@ -3,6 +3,7 @@ import rospy
 from geometry_msgs.msg import Twist
 from cs1567p1.srv import *
 from std_srvs.srv import * 
+import math
 
 MAZE_SIZE = 5
 
@@ -10,6 +11,10 @@ LEFT = 0
 RIGHT = 1
 UP = 2
 DOWN = 3
+
+x_displacement = 0.0
+y_displacement = 0.0
+theta_displacement = 0.0
 
 make_maze_service = None
 print_maze_service = None
@@ -152,12 +157,30 @@ def solve_maze():
     rospy.loginfo("final position: ({},{})".format(current_pos[0],current_pos[1]))
 
 
+def odometry_callback(data):
+    global x_displacement
+    global y_displacement
+    global theta_displacement
+    
+    x_displacement = data.pose.pose.position.x
+    y_displacement = data.pose.pose.position.y
+    theta_displacement = 2*math.acos(data.pose.pose.orientation.w)
+
 def initialize_commands():
     rospy.init_node('mazesolvernode', anonymous=True)
     rospy.wait_for_service('make_maze')
     rospy.wait_for_service('print_maze')
     rospy.wait_for_service('get_wall')
     rospy.wait_for_service('constant_command')
+    # odometry
+    pub = rospy.Publisher('/mobile_base/commands/reset_odometry', Empty, queue_size=10)
+    rospy.Subscriber('/odom', Odometry, odometry_callback)
+    while (pub.get_num_connections() <= 0):
+        rospy.sleep(0.1)
+
+    pub.publish(Empty())
+    rospy.spin()
+    ## end odom
 
     global make_maze_service, print_maze_service, get_wall_service
     global constant_command_service
