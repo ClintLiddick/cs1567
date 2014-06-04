@@ -167,6 +167,13 @@ def solve_maze():
             turn_left()
     rospy.loginfo("final position: ({},{})".format(current_pos[0],current_pos[1]))
 
+def calibrate_odometry():
+    for x in range(0,4):
+        turn_left()
+    for x in range(0,4):
+        turn_right()
+    for x in range(0,4):
+        move_forward()
 
 def odometry_callback(data):
     global x_displacement
@@ -203,10 +210,10 @@ def initialize_commands():
     constant_command_service = rospy.ServiceProxy('constant_command', ConstantCommand)
     
     # runs code
-    make_maze_service(MAZE_SIZE,MAZE_SIZE)
-    print_maze_service()
-    solve_maze()
-
+    #make_maze_service(MAZE_SIZE,MAZE_SIZE)
+    #print_maze_service()
+    #solve_maze()
+    calibrate_odometry()
      
 if __name__ == "__main__":   
     try: 
