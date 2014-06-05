@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  nav_msgs
   std_srvs
   geometry_msgs
   message_generation
@@ -73,6 +74,7 @@ find_package(catkin REQUIRED COMPONENTS
  generate_messages(
    DEPENDENCIES
    std_msgs
+   nav_msgs
    std_srvs
    geometry_msgs
  )
@@ -89,7 +91,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES cs1567p1
-CATKIN_DEPENDS message_runtime kobuki_node roscpp rospy std_msgs std_srvs geometry_msgs
+CATKIN_DEPENDS message_runtime kobuki_node roscpp rospy std_msgs nav_msgs std_srvs geometry_msgs
 #  DEPENDS system_lib
 )
 
