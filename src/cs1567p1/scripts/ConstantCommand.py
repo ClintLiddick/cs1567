@@ -2,7 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import Twist
-from cs1567p0.srv import *
+from cs1567p1.srv import *
 
 current_command = Twist()
 

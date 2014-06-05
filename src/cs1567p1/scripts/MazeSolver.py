@@ -1,8 +1,10 @@
 #!/usr/bin/python
 import rospy
+import std_msgs.msg as stdmsg
+from nav_msgs.msg import *
 from geometry_msgs.msg import Twist
 from cs1567p1.srv import *
-from std_srvs.srv import * 
+import std_srvs.srv as std_srv 
 import math
 
 MAZE_SIZE = 5
@@ -77,65 +79,83 @@ def rightwall():
     direction = getNextRightDirection()
     return checkWall(current_pos[0],current_pos[1],direction)
 
-# movement commands
+# movement commandsservice "returned no response"
 
 def move_forward():
-    global facing
     global current_pos
-    
-    try:
+    global facing
+    pub.publish(stdmsg.Empty())
+    rospy.sleep(0.5)
+    print "forward start x: {}".format(x_displacement)
+    r = rospy.Rate(10)
+    #while (x_displacement < 0.2  and not rospy.is_shutdown()):
+    while (x_displacement < 0.49  and not rospy.is_shutdown()):
         command.linear.x = 0.1
-        response = constant_command_service(command)
-        rospy.sleep(6.2)
-        command.linear.x = 0.0
-        response = constant_command_service(command)
-        rospy.sleep(0.5)
+        constant_command_service(command)
+        r.sleep()
         
-        rospy.loginfo("forward x: {} y: {}".format(x_displacement,y_displacement))
-        pub.publish(Empty())
-        
-        if facing == LEFT:
-            current_pos = (current_pos[0]-1,current_pos[1])
-        elif facing == RIGHT:
-            current_pos = (current_pos[0]+1,current_pos[1])
-        elif facing == UP:
-            current_pos = (current_pos[0],current_pos[1]-1)
-        elif facing == DOWN:
-            current_pos = (current_pos[0],current_pos[1]+1)
-            
-    except rospyServiceException, e:
-        print "Service call failed: %s"%e
+    command.linear.x = 0.0
+    constant_command_service(command)
+    print "forward end x: {}".format(x_displacement)
+    pub.publish(stdmsg.Empty())
+    rospy.sleep(0.5)
+    
+    if facing == LEFT:
+        current_pos = (current_pos[0]-1,current_pos[1])
+    elif facing == RIGHT:
+        current_pos = (current_pos[0]+1,current_pos[1])
+    elif facing == UP:
+        current_pos = (current_pos[0],current_pos[1]-1)
+    elif facing == DOWN:
+        current_pos = (current_pos[0],current_pos[1]+1)
+
     
 def turn_left():
     global facing
     
-    command.angular.z = 0.5
-    response = constant_command_service(command)
-    rospy.sleep(5.4)
-    command.angular.z = 0.0
-    response = constant_command_service(command)
+    pub.publish(stdmsg.Empty())
     rospy.sleep(0.5)
     
-    rospy.loginfo("left turn theta: {}".format(theta_displacement))
-    pub.publish(Empty())
+    rospy.loginfo("started left turn, theta: {}".format(theta_displacement))
+    r = rospy.Rate(10)
+    while (theta_displacement < 1.42 and not rospy.is_shutdown()):
+        command.angular.z = 0.5
+        constant_command_service(command)
+        r.sleep()
+
+    command.angular.z = 0.0
+    constant_command_service(command)
     
-    facing = getNextLeftDirection()
+    rospy.loginfo("ended left turn")
+    rospy.loginfo("left turn theta: {}".format(theta_displacement))
+    pub.publish(stdmsg.Empty())
+    rospy.sleep(0.5) 
+   
+    facing = getNextLeftDirection()  
 
 
 def turn_right():
     global facing
-    command.angular.z = -0.5
-    response = constant_command_service(command)
-    rospy.sleep(5.3)
-    command.angular.z = 0.0
-    response = constant_command_service(command)
+    
+    pub.publish(stdmsg.Empty())
     rospy.sleep(0.5)
     
+    rospy.loginfo("started right turn, theta: {}".format(theta_displacement))
+    r = rospy.Rate(10)
+    while (theta_displacement < 1.53 and not rospy.is_shutdown()):
+        command.angular.z = -0.5
+        constant_command_service(command)
+        r.sleep()
+
+    command.angular.z = 0.0
+    constant_command_service(command)
+    
     rospy.loginfo("right turn theta: {}".format(theta_displacement))
-    pub.publish(Empty())
+    pub.publish(stdmsg.Empty())
+    rospy.sleep(0.5)
 
     facing = getNextRightDirection()
-        
+    
 
 def solve_maze():
     global current_pos
@@ -154,13 +174,16 @@ def solve_maze():
         
         # go left if possible
         if not leftwall():
+            print "going left"
             turn_left()
             move_forward()
         # else go forward if possible
         elif not forwardwall():
+            print "goind forward"
             move_forward()
         # else go right if possible
         elif not rightwall():
+            "going right"
             turn_right()
             move_forward()
         else:
@@ -168,12 +191,15 @@ def solve_maze():
     rospy.loginfo("final position: ({},{})".format(current_pos[0],current_pos[1]))
 
 def calibrate_odometry():
+    """
     for x in range(0,4):
         turn_left()
     for x in range(0,4):
         turn_right()
-    for x in range(0,4):
+    """
+    for x in range(0,2):
         move_forward()
+
 
 def odometry_callback(data):
     global x_displacement
@@ -191,29 +217,29 @@ def initialize_commands():
     rospy.wait_for_service('get_wall')
     rospy.wait_for_service('constant_command')
     # odometry
+
     global pub
-    pub = rospy.Publisher('/mobile_base/commands/reset_odometry', Empty, queue_size=10)
+    pub = rospy.Publisher('/mobile_base/commands/reset_odometry', stdmsg.Empty, queue_size=10)
     rospy.Subscriber('/odom', Odometry, odometry_callback)
     while (pub.get_num_connections() <= 0):
         rospy.sleep(0.1)
 
-    pub.publish(Empty())
-    rospy.spin()
+    pub.publish(stdmsg.Empty())
     ## end odom
 
     global make_maze_service, print_maze_service, get_wall_service
     global constant_command_service
-
     make_maze_service = rospy.ServiceProxy('make_maze', MakeNewMaze)
-    print_maze_service = rospy.ServiceProxy('print_maze', Empty)
+    print_maze_service = rospy.ServiceProxy('print_maze', std_srv.Empty)
     get_wall_service = rospy.ServiceProxy('get_wall', GetMazeWall)
     constant_command_service = rospy.ServiceProxy('constant_command', ConstantCommand)
     
+    #calibrate_odometry()    
     # runs code
-    #make_maze_service(MAZE_SIZE,MAZE_SIZE)
-    #print_maze_service()
-    #solve_maze()
-    calibrate_odometry()
+    make_maze_service(MAZE_SIZE,MAZE_SIZE)
+    print_maze_service()
+    solve_maze()
+
      
 if __name__ == "__main__":   
     try: 
