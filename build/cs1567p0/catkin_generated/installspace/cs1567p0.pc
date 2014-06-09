@@ -1,0 +1,8 @@
+prefix=/home/student/cs1567_ws/install
+
+Name: cs1567p0
+Description: Description of cs1567p0
+Version: 0.0.0
+Cflags: -I/home/student/cs1567_ws/install/include
+Libs: -L/home/student/cs1567_ws/install/lib 
+Requires: message_runtime kobuki_node roscpp rospy std_msgs geometry_msgs

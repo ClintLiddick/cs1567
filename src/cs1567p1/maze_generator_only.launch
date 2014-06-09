@@ -1,0 +1,3 @@
+<launch>
+<node name="MazeGenerator" pkg="cs1567p1" type="MazeGenerator.py" output="screen"/>
+</launch>

@@ -1,0 +1,4 @@
+<launch>
+<include file="$(find kobuki_node)/launch/minimal.launch"/>
+<node name="ConstantCommand" pkg="cs1567p0" type="ConstantCommand.py"/>
+</launch>

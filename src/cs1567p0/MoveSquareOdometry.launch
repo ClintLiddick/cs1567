@@ -1,0 +1,3 @@
+<launch>
+<node name="MoveSquareOdometry" pkg="cs1567p0" type="MoveSquareOdometry.py"/>
+</launch>
