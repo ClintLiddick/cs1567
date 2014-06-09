@@ -1,0 +1,3 @@
+<launch>
+<node name="MazeSolver" pkg="cs1567p1" type="MazeSolver.py"/>
+</launch>
