@@ -1,0 +1,6 @@
+jump.cs.pitt.edu
+
+two squares, color ident + direction color (inline)
+
+kinect#/rbg/image_color (bgr format, every 3 bytes is a pixel)
+kinect#/depth_registered/points
