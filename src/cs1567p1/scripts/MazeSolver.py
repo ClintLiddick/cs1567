@@ -139,6 +139,8 @@ def turn_right():
     """
     pub.publish(stdmsg.Empty())
     rospy.sleep(0.5)
+    pub.publish(stdmsg.Empty())
+    rospy.sleep(0.5)
     
     rospy.loginfo("started right turn, theta: {}".format(theta_displacement))
     r = rospy.Rate(11)
