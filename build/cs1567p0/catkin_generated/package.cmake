@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "cs1567p0")
-set(cs1567p0_MAINTAINER "instructor <pitt.cs1567@gmail.com>")
-set(cs1567p0_DEPRECATED "")
-set(cs1567p0_VERSION "0.0.0")
-set(cs1567p0_BUILD_DEPENDS "kobuki_node" "roscpp" "rospy" "std_msgs" "geometry_msgs" "message_generation")
-set(cs1567p0_RUN_DEPENDS "message_runtime" "kobuki_node" "roscpp" "rospy" "std_msgs" "geometry_msgs")
-set(cs1567p0_BUILDTOOL_DEPENDS "catkin")

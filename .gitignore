@@ -1,0 +1,19 @@
+# ignore build directories
+build/
+devel/
+
+# ignore all bin directories
+# matches "bin" in any subfolder
+bin/
+
+# ignore all files ending with ~
+*~
+
+# ignore .metadata directory just in case
+.metadata/
+# ignore certain files
+/rssfeed.txt
+.DS_Store
+.settings/
+.project
+.classpath
