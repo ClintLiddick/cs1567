@@ -101,9 +101,9 @@ def initialize():
     global kinect2pub
     global locpub
     rospy.init_node("localize")
-    locpub = rospy.Publisher("/NAMEME/location",LocationList) #publish your locations
-    kinect1pub = rospy.Publisher("/NAMEME/mask",Image) #test your mask
-    kinect2pub = rospy.Publisher("/NAMEME/mask",Image)
+    locpub = rospy.Publisher("/twiki/location",LocationList) #publish your locations
+    kinect1pub = rospy.Publisher("/twiki/mask",Image) #test your mask
+    kinect2pub = rospy.Publisher("/twiki/mask",Image)
     rospy.Subscriber("/kinect1/rgb/image_color", Image, top_image_callback)
     rospy.Subscriber("/kinect1/depth_registered/points", PointCloud2, top_cloud_callback)
     rospy.Subscriber("/kinect2/rgb/image_color", Image, mid_image_callback)
