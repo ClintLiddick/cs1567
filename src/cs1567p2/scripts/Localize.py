@@ -4,7 +4,7 @@ import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import *
 from cs1567p2.msg import *
 
-color_mask_list = [[110,0,0]]
+color_mask_list = [[110,0,0]] # TODO figure out colors we want to match and put them in list
 threshold = 20
 locpub = None
 kinect1pub = None
@@ -19,7 +19,7 @@ def top_image_callback(message):
     global kinect1pub
     #make a new image if you want to view your mask
     top_mask = Image()
-    top_mask.height = message.height
+    top_mask.height = message.height # height/width in pixels?
     top_mask.width = message.width
     top_mask.encoding = message.encoding
     top_mask.is_bigendian = message.is_bigendian
@@ -27,7 +27,7 @@ def top_image_callback(message):
     if message.encoding == "bgr8": #this is image_color encoding
         byte_array = list(message.data) #convert unit8[] from string to chars
         for index in xrange(message.height*message.width): #iterate through
-            byte_array[3*index] = chr(0)
+            byte_array[3*index] = chr(0) # each pixel = 3 bytes, 1 for each color?
             byte_array[3*index+1] = chr(0)
             byte_array[3*index+2] = chr(0)
             for k in xrange(len(color_mask_list)): 
@@ -95,6 +95,17 @@ def mid_cloud_callback(message):
             i=i+1
     except StopIteration: 
         print "2 complete"
+
+###############################################
+# TODO
+###########
+def find_center(points):
+    # return point that is average of greatest/least y and x values
+
+def merge_xy_kinects(k1points, k2points):
+    # return single merged list of points with (x,y) relative to global center
+
+###############################################
 
 def initialize():
     global kinect1pub
