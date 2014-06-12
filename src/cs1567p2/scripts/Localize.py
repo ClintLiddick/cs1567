@@ -98,12 +98,15 @@ def mid_cloud_callback(message):
 
 ###############################################
 # TODO
-###########
+
 def find_center(points):
     # return point that is average of greatest/least y and x values
 
 def merge_xy_kinects(k1points, k2points):
     # return single merged list of points with (x,y) relative to global center
+    # use this to take the two "masked" images into one big image before finding centers
+
+# note: filter a list with newlist = [item for item in oldlist if item.someattribute >= someval]
 
 ###############################################
 
