@@ -4,7 +4,15 @@ import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import *
 from cs1567p2.msg import *
 
-color_mask_list = [[110,0,0]] # TODO figure out colors we want to match and put them in list
+# some colors from images taken of PostIt and construction PAper
+# in BRG format
+GREEN_PI = [90,225,220]
+LPINK_PI = [75,150,235]
+DPINK_PI = [175,120,230]
+RED_PA = [110,90,230]
+BLUE_PI = [200,205,175]
+
+color_mask_list = [RED_PA,BLUE_PI] # try to use Blue postit as position and Red paper as direction
 threshold = 20
 locpub = None
 kinect1pub = None
