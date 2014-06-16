@@ -19,6 +19,7 @@ kinect1pub = None
 kinect2pub = None
 top_mask = Image()
 mid_mask = Image()
+bot_mask = Image()
 
 def top_image_callback(message):
     global color_mask_list
@@ -58,7 +59,7 @@ def mid_image_callback(message):
     global color_mask_list
     global mid_mask
     global threshold
-    global kinect2pub
+    global kinect3pub
     mid_mask = Image()
     mid_mask.height = message.height
     mid_mask.width = message.width
@@ -79,8 +80,37 @@ def mid_image_callback(message):
                     byte_array[3*index+1] = chr(color_mask_list[k][1])
                     byte_array[3*index+2] = chr(color_mask_list[k][2])
     mid_mask.data = "".join(byte_array)
-    kinect2pub.publish(mid_mask)
+    kinect3pub.publish(mid_mask)
+    print "done3"
+
+def bot_image_callback(message):
+    global color_mask_list
+    global bot_mask
+    global threshold
+    global kinect2pub
+    bot_mask = Image()
+    bot_mask.height = message.height
+    bot_mask.width = message.width
+    bot_mask.encoding = message.encoding
+    bot_mask.is_bigendian = message.is_bigendian
+    bot_mask.step = message.step
+    if message.encoding == "bgr8":
+        byte_array = list(message.data)
+        for index in xrange(message.height*message.width):
+            byte_array[3*index] = chr(0)
+            byte_array[3*index+1] = chr(0)
+            byte_array[3*index+2] = chr(0)
+            for k in xrange(len(color_mask_list)):
+                if abs(color_mask_list[k][0] - ord(byte_array[3*index])) < threshold\
+                        and abs(color_mask_list[k][1] - ord(byte_array[3*index+1])) < threshold\
+                        and abs(color_mask_list[k][2] - ord(byte_array[3*index+2])) < threshold:
+                    byte_array[3*index+0] = chr(color_mask_list[k][0])
+                    byte_array[3*index+1] = chr(color_mask_list[k][1])
+                    byte_array[3*index+2] = chr(color_mask_list[k][2])
+    bot_mask.data = "".join(byte_array)
+    kinect2pub.publish(bot_mask)
     print "done2"
+
 
 
 def top_cloud_callback(message):
@@ -97,6 +127,18 @@ def top_cloud_callback(message):
         print "1 complete"
 
 def mid_cloud_callback(message):
+    try:
+        data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[])
+        i=0
+        iteration1 = next(data_out) #format x,y,z,rgba
+        while iteration1 != None:
+            iteration1 = next(data_out)
+            i=i+1
+    except StopIteration: 
+        print "3 complete"
+
+
+def bot_cloud_callback(message):
     try:
         data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[])
         i=0
@@ -129,15 +171,19 @@ def merge_xy_kinects(k1points, k2points):
 def initialize():
     global kinect1pub
     global kinect2pub
+    global kinect3pub
     global locpub
     rospy.init_node("localize")
     locpub = rospy.Publisher("/twiki/location",LocationList) #publish your locations
     kinect1pub = rospy.Publisher("/twiki/mask",Image) #test your mask
     kinect2pub = rospy.Publisher("/twiki/mask",Image)
+    kinect3pub = rospy.Publisher("/twiki/mask",Image)
     rospy.Subscriber("/kinect1/rgb/image_color", Image, top_image_callback)
     rospy.Subscriber("/kinect1/depth_registered/points", PointCloud2, top_cloud_callback)
-    rospy.Subscriber("/kinect2/rgb/image_color", Image, mid_image_callback)
-    rospy.Subscriber("/kinect2/depth_registered/points", PointCloud2, mid_cloud_callback)
+    rospy.Subscriber("/kinect3/rgb/image_color", Image, mid_image_callback)
+    rospy.Subscriber("/kinect3/depth_registered/points", PointCloud2, mid_cloud_callback)
+    rospy.Subscriber("/kinect2/rgb/image_color", Image, bot_image_callback)
+    rospy.Subscriber("/kinect2/depth_registered/points", PointCloud2, bot_cloud_callback)
     rospy.spin()
 
 if __name__ == "__main__":
