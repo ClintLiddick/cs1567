@@ -17,6 +17,7 @@ threshold = 20
 locpub = None
 kinect1pub = None
 kinect2pub = None
+kinect3pub = None
 top_mask = Image()
 mid_mask = Image()
 bot_mask = Image()
@@ -154,14 +155,17 @@ def bot_cloud_callback(message):
 
 def find_center(points):
     # return point that is average of greatest/least y and x values, points::uint8[]
+    print "find center"
 
 
 def find_center_near(points, loc, dist):
     # returns point that is center of points, but within dist::int distance of loc point::(x,y)
+    print "find center near"
 
 def merge_xy_kinects(k1points, k2points):
     # return single merged list of points with (x,y) relative to global center
     # use this to take the two "masked" images into one big image before finding centers
+    print "merge xy"
 
 # note: filter a list with newlist = [item for item in oldlist if item.someattribute >= someval]
 
@@ -175,9 +179,9 @@ def initialize():
     global locpub
     rospy.init_node("localize")
     locpub = rospy.Publisher("/twiki/location",LocationList) #publish your locations
-    kinect1pub = rospy.Publisher("/twiki/mask",Image) #test your mask
-    kinect2pub = rospy.Publisher("/twiki/mask",Image)
-    kinect3pub = rospy.Publisher("/twiki/mask",Image)
+    kinect1pub = rospy.Publisher("/twiki/top_mask",Image) #test your mask
+    kinect2pub = rospy.Publisher("/twiki/bot_mask",Image)
+    kinect3pub = rospy.Publisher("/twiki/mid_mask",Image)
     rospy.Subscriber("/kinect1/rgb/image_color", Image, top_image_callback)
     rospy.Subscriber("/kinect1/depth_registered/points", PointCloud2, top_cloud_callback)
     rospy.Subscriber("/kinect3/rgb/image_color", Image, mid_image_callback)
