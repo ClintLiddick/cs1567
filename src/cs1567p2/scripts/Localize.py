@@ -35,12 +35,15 @@ def top_image_callback(message):
     if message.encoding == "bgr8": #this is image_color encoding
         byte_array = list(message.data) #convert unit8[] from string to chars
         for index in xrange(message.height*message.width): #iterate through
-            byte_array[3*index] = chr(0) # each pixel = 3 bytes, 1 for each color?
+            # set pixel to black first
+            # chr(i) returns a byte ("ascii") whose value is i
+            byte_array[3*index] = chr(0) # each pixel = 3 bytes, 1 for each color BGR
             byte_array[3*index+1] = chr(0)
             byte_array[3*index+2] = chr(0)
             for k in xrange(len(color_mask_list)): 
                 #iterate through color list, if the bytes match, save the color
                 #in the mask
+                # ord(b) returns the value of ascii char (or 8-bit byte) b
                 if abs(color_mask_list[k][0] - ord(byte_array[3*index])) < threshold\
                         and abs(color_mask_list[k][1] - ord(byte_array[3*index+1])) < threshold\
                         and abs(color_mask_list[k][2] - ord(byte_array[3*index+2])) < threshold:
@@ -108,13 +111,18 @@ def mid_cloud_callback(message):
 # TODO
 
 def find_center(points):
-    # return point that is average of greatest/least y and x values
+    # return point that is average of greatest/least y and x values, points::uint8[]
+
+
+def find_center_near(points, loc, dist):
+    # returns point that is center of points, but within dist::int distance of loc point::(x,y)
 
 def merge_xy_kinects(k1points, k2points):
     # return single merged list of points with (x,y) relative to global center
     # use this to take the two "masked" images into one big image before finding centers
 
 # note: filter a list with newlist = [item for item in oldlist if item.someattribute >= someval]
+
 
 ###############################################
 
