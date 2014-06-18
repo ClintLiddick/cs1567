@@ -22,6 +22,10 @@ top_mask = Image()
 mid_mask = Image()
 bot_mask = Image()
 
+top_tup = (None,None,None,None)
+mid_tup = (None,None,None,None)
+bot_tup = (None,None,None,None)
+
 def mask_image(message):
     byte_array = list(message.data) #convert unit8[] from string to chars
     for index in xrange(message.height*message.width): #iterate through
@@ -131,6 +135,7 @@ def bot_cloud_callback(message):
         i=0
         iteration1 = next(data_out) #format x,y,z,rgba
         while iteration1 != None:
+
             iteration1 = next(data_out)
             i=i+1
     except StopIteration: 
@@ -139,23 +144,38 @@ def bot_cloud_callback(message):
 ###############################################
 # TODO
 
+def to2DArray(mask):
+    matrix = [['\0' for x in xrange(mask.width)] for x in xrange(mask.height)]
+    byte_array = list(message.data) #convert unit8[] from string to chars
+    for row in xrange(mask.height):
+        for col in xrange(mask.width)
+        matrix[row][col] = byte_array[row*col]
+    return matrix
+
 def find_center(points,color):
     # return point that is average of greatest/least y and x values, points::uint8[]
     print "find center"
 
-
-
-def find_center_near(points, loc, dist):
+def find_center_near(points, color, loc, dist):
     # returns point that is center of points, but within dist::int distance of loc point::(x,y)
     print "find center near"
 
-def merge_xy_kinects(k1points, k2points):
+def merge_xy_kinects(top_points, mid_points, bot_points):
     # return single merged list of points with (x,y) relative to global center
     # use this to take the two "masked" images into one big image before finding centers
     print "merge xy"
 
 # note: filter a list with newlist = [item for item in oldlist if item.someattribute >= someval]
 
+def inBlob(mask,index):
+    # sum of distance from point that is still same color >= some threshold
+
+def find_robot():
+    full_mask = merge_xy_kinects(top_mask,mid_mask,bot_mask)
+    body_mask_center = find_center(full_mask,RED_PA)
+    dir_mask_center = find_center_near(full_mask,BLUE_PI,body_mask_center,100) #100 px distance?
+
+    body_center = 
 
 ###############################################
 
