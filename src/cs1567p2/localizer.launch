@@ -1,5 +1,5 @@
 <launch>
 
-<node name="mObiLocalizer" pkg="cs1567p2" type="Localize.py" output="screen"/>
+<node name="TwikiLocalizer" pkg="cs1567p2" type="Localize.py" output="screen"/>
 
 </launch>
