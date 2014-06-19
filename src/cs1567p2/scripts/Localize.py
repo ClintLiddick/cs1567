@@ -294,7 +294,10 @@ def initialize():
     rospy.Subscriber("/kinect3/depth_registered/points", PointCloud2, mid_cloud_callback)
     rospy.Subscriber("/kinect2/rgb/image_color", Image, bot_image_callback)
     rospy.Subscriber("/kinect2/depth_registered/points", PointCloud2, bot_cloud_callback)
-    findUniqueCenters()
+    r = rospy.Rate(.2)
+    while not rospy.is_shutdown():
+        findUniqueCenters()
+        r.sleep()
     rospy.spin()
 
 if __name__ == "__main__":
