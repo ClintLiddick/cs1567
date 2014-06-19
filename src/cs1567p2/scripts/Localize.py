@@ -244,7 +244,27 @@ def blobWidthHeight(mask,index):
 
 
 
-def find_robot():
+def findUniqueCenters():
+    minSize = 100
+    mid_centers = []
+    bot_centers = []
+    for k in xrange(mid_mask.width*mid_mask*height):
+        if mid_mask[k*3] != 0:
+            x,y = blobWidthHeight(mid_mask,k*3)
+            if x > minSize and y > minSize:
+                center = find_center(mid_mask,k*3)
+                if center not in mid_centers:
+                    mid_centers.append(center)
+
+    for k in xrange(bot_mask.width*bot_mask*height):
+        if bot_mask[k*3] != 0:
+            x,y = blobWidthHeight(bot_mask,k*3)
+            if x > minSize and y > minSize:
+                center = find_center(bot_mask,k*3)
+                if center not in bot_centers:
+                    bot_centers.append(center)
+    print mid_centers
+    print bot_centers
  
 
 ###############################################
@@ -265,6 +285,7 @@ def initialize():
     rospy.Subscriber("/kinect3/depth_registered/points", PointCloud2, mid_cloud_callback)
     rospy.Subscriber("/kinect2/rgb/image_color", Image, bot_image_callback)
     rospy.Subscriber("/kinect2/depth_registered/points", PointCloud2, bot_cloud_callback)
+    findUniqueCenters()
     rospy.spin()
 
 if __name__ == "__main__":
