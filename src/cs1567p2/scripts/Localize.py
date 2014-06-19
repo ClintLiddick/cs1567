@@ -144,17 +144,48 @@ def bot_cloud_callback(message):
 ###############################################
 # TODO
 
-def to2DArray(mask):
-    matrix = [['\0' for x in xrange(mask.width)] for x in xrange(mask.height)]
-    byte_array = list(message.data) #convert unit8[] from string to chars
-    for row in xrange(mask.height):
-        for col in xrange(mask.width)
-        matrix[row][col] = byte_array[row*col]
-    return matrix
+# as 2D array: index = row*height + col*width
 
-def find_center(points,color):
-    # return point that is average of greatest/least y and x values, points::uint8[]
-    print "find center"
+def find_center(mask,index):
+    mask = list(mask)
+    # return point that is average of greatest/least y and x values
+    pt_color = mask.data[index:index+3]
+    color = pt_color
+    up = 0
+    i = 0
+    while i >= index and colorsMatch(color,pt_color):
+        i += mask.width * 3
+        color = mask.data[index-i:index-i+3]
+        up += 1
+
+    color = pt_color
+    down = 0
+    i = 0
+    while i < (mask.height*3 - index) and colorsMatch(color,pt_color):
+        i += mask.width * 3
+        color = mask.data[index+i:index+i+3]
+        down += 1
+
+    # check left right (col)
+    color = pt_color
+    left = 0
+    i = 0
+    while i <= (index % mask.width) and colorsMatch(color,pt_color):
+        i += 3
+        color = mask.data[index-i:index-i+3]
+        left += 1
+
+    color = pt_color
+    right = 0
+    i = 0
+    while i <= (mask.width - (index % mask.width)) and colorsMatch(color,pt_color):
+        i += 3
+        color = mask.data[index+i:index+i+3]
+        up += 1
+
+    x = (right + left)/2
+    y = (up + down)/2
+    return (x,y)
 
 def find_center_near(points, color, loc, dist):
     # returns point that is center of points, but within dist::int distance of loc point::(x,y)
@@ -167,15 +198,52 @@ def merge_xy_kinects(top_points, mid_points, bot_points):
 
 # note: filter a list with newlist = [item for item in oldlist if item.someattribute >= someval]
 
-def inBlob(mask,index):
+def blobWidthHeight(mask,index):
+    mask = list(mask)
     # sum of distance from point that is still same color >= some threshold
+    minSize = 100 #px
+    # check up and down (row)
+    pt_color = mask.data[index:index+3]
+    color = pt_color
+    up = 0
+    i = 0
+    while i >= index and colorsMatch(color,pt_color):
+        i += mask.width * 3
+        color = mask.data[index-i:index-i+3]
+        up += 1
+
+    color = pt_color
+    down = 0
+    i = 0
+    while i < (mask.height*3 - index) and colorsMatch(color,pt_color):
+        i += mask.width * 3
+        color = mask.data[index+i:index+i+3]
+        down += 1
+
+    # check left right (col)
+    color = pt_color
+    left = 0
+    i = 0
+    while i <= (index % mask.width) and colorsMatch(color,pt_color):
+        i += 3
+        color = mask.data[index-i:index-i+3]
+        left += 1
+
+    color = pt_color
+    right = 0
+    i = 0
+    while i <= (mask.width - (index % mask.width)) and colorsMatch(color,pt_color):
+        i += 3
+        color = mask.data[index+i:index+i+3]
+        up += 1
+
+    return (left+right,up+down)
+
+def colorsMatch(first,second):
+    return first[0] == second[0] and first[1] == second[1] and first[2] == second[2]
 
 def find_robot():
-    full_mask = merge_xy_kinects(top_mask,mid_mask,bot_mask)
-    body_mask_center = find_center(full_mask,RED_PA)
-    dir_mask_center = find_center_near(full_mask,BLUE_PI,body_mask_center,100) #100 px distance?
-
-    body_center = 
+ 
 
 ###############################################
 
