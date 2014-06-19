@@ -248,7 +248,11 @@ def findUniqueCenters():
     minSize = 100
     mid_centers = []
     bot_centers = []
+<<<<<<< HEAD
     for k in xrange(mid_mask.width*mid_mask.height):
+=======
+    for k in xrange(mid_mask.width*mid_mask*height):
+>>>>>>> 45adefac3ae317ccbb74e029e7426aa6de1ee24c
         if mid_mask[k*3] != 0:
             x,y = blobWidthHeight(mid_mask,k*3)
             if x > minSize and y > minSize:
