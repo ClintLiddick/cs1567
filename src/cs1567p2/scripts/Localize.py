@@ -14,7 +14,6 @@ BLUE_PI = [200,205,175]
 
 color_mask_list = [RED_PA] # try to use Blue postit as position and Red paper as direction
 threshold = 70
-locpub = None
 kinect1pub = None
 kinect2pub = None
 kinect3pub = None
@@ -22,9 +21,9 @@ top_mask = Image()
 mid_mask = Image()
 bot_mask = Image()
 
-top_tup = (None,None,None,None)
-mid_tup = (None,None,None,None)
-bot_tup = (None,None,None,None)
+top_cloud_points = (None,None,None,None)
+mid_cloud_points = (None,None,None,None)
+bot_cloud_points = (None,None,None,None)
 
 def mask_image(message):
     byte_array = list(message.data) #convert unit8[] from string to chars
@@ -108,36 +107,44 @@ def top_cloud_callback(message):
     try:
         #make a generator, skipping points that have no depth, on points in 
         # list of uvs (index into image [col,row]) or if empty list, get all pt
-        data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[]) # list of 4-tuples
+        global top_cloud_points
+        top_cloud_points = message
+        """data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[]) # list of 4-tuples
         i=0
         iteration1 = next(data_out) #format x,y,z,rgba
         while iteration1 != None:
             iteration1 = next(data_out)
             i=i+1
+        """
     except StopIteration: 
         print "1 complete"
 
 def mid_cloud_callback(message):
     try:
-        data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[])
+        global mid_cloud_points
+        mid_cloud_points = message
+        """data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[])
         i=0
         iteration1 = next(data_out) #format x,y,z,rgba
         while iteration1 != None:
             iteration1 = next(data_out)
             i=i+1
+        """
     except StopIteration: 
         print "3 complete"
 
 
 def bot_cloud_callback(message):
     try:
-        data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[])
+        global bot_cloud_points
+        bot_cloud_points = message
+        """data_out = pc2.read_points(message, field_names=None, skip_nans=True, uvs=[])
         i=0
         iteration1 = next(data_out) #format x,y,z,rgba
         while iteration1 != None:
 
             iteration1 = next(data_out)
-            i=i+1
+        """    i=i+1
     except StopIteration: 
         print "2 complete"
 
