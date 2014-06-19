@@ -58,12 +58,12 @@ def top_image_callback(message):
     top_mask.encoding = message.encoding
     top_mask.is_bigendian = message.is_bigendian
     top_mask.step = message.step
-    mask = ""
     if message.encoding == "bgr8": #this is image_color encoding
-        mask = mask_image(message)
-    top_mask.data = mask
+        top_mask.data = mask_image(message)
+    else:
+        top_mask.data = ""
     kinect1pub.publish(top_mask) #publish the mask for viewing
-    print "done1"
+    print "done top"
         
 def mid_image_callback(message):
     global color_mask_list
@@ -76,12 +76,13 @@ def mid_image_callback(message):
     mid_mask.encoding = message.encoding
     mid_mask.is_bigendian = message.is_bigendian
     mid_mask.step = message.step
-    mask = ""
+
     if message.encoding == "bgr8":
-        mask = mask_image(message)
-    mid_mask.data = mask
+        mid_mask.data = mask_image(message)
+    else:
+        mid_mask.data = ""
     kinect3pub.publish(mid_mask)
-    print "done3"
+    print "done mid"
 
 def bot_image_callback(message):
     global color_mask_list
@@ -94,12 +95,12 @@ def bot_image_callback(message):
     bot_mask.encoding = message.encoding
     bot_mask.is_bigendian = message.is_bigendian
     bot_mask.step = message.step
-    mask = ""
     if message.encoding == "bgr8": #this is image_color encoding
-        mask = mask_image(message)
-    top_mask.data = mask
+        bot_mask.data = mask_image(message)
+    else:
+        bot_mask.data = ""
     kinect2pub.publish(bot_mask)
-    print "done2"
+    print "done bot"
 
 
 
