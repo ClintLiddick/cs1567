@@ -254,25 +254,30 @@ def blobWidthHeight(mask,index):
 
 
 def findUniqueCenters():
-    minSize = 100
+    minSize = 10
     mid_centers = []
     bot_centers = []
-    for k in xrange(mid_mask.width*mid_mask.height):
-        if mid_mask.data[k*3] != 0:
-            x,y = blobWidthHeight(mid_mask,k*3)
+    mid_data = list(mid_mask.data)
+    bot_data = list(bot_mask.data)
+    k = 0
+    while k < len(mid_data):
+        if mid_data[k] != 0:
+            x,y = blobWidthHeight(mid_mask,k)
             if x > minSize and y > minSize:
-                center = find_center(mid_mask,k*3)
+                center = find_center(mid_mask,k)
                 if center not in mid_centers:
                     mid_centers.append(center)
-
-    for k in xrange(bot_mask.width*bot_mask.height):
-        if bot_mask.data[k*3] != 0:
-            x,y = blobWidthHeight(bot_mask,k*3)
+        k += 3
+    print mid_centers
+    k = 0
+    while k < len(bot_data):
+        if bot_data[k] != 0:
+            x,y = blobWidthHeight(bot_mask,k)
             if x > minSize and y > minSize:
-                center = find_center(bot_mask,k*3)
+                center = find_center(bot_mask,k)
                 if center not in bot_centers:
                     bot_centers.append(center)
-    print mid_centers
+        k += 3
     print bot_centers
  
 
