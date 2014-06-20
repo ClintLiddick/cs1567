@@ -263,6 +263,7 @@ def findUniqueCenters():
     while k < len(mid_data):
         if mid_data[k] != 0:
             x,y = blobWidthHeight(mid_mask,k)
+            print "blob:",x,y
             if x > minSize and y > minSize:
                 center = find_center(mid_mask,k)
                 if center not in mid_centers:
