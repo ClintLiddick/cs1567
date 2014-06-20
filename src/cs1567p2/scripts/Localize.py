@@ -201,14 +201,15 @@ def find_center(mask,index):
     y = (up + down)/2
     return (x,y)
 
-def pick_center_near(centers, color, point, dist):
+def pick_center_near(centers, point, dist):
     # returns center::(x,y) that is closest to dist::int distance of point::(x,y)
     print "find center near"
     best_match = centers[0]
     a = math.fabs(point[0]-centers[0][0])
     b = math.fabs(point[1]-centers[0][1])
-    best_dist = math.sqrt(a**2 + b**2) # pythagorean
+    best_dist = math.hypot(a,b) # pythagorean
     for x in centers:
+        if
         a = math.fabs(point[0]-centers[k][0])
         b = math.fabs(point[1]-centers[k][1])
         new_dist = math.sqrt(a**2 + b**2)
@@ -298,9 +299,21 @@ def findUniqueCenters():
                     bot_centers.append(center)
     print bot_centers
 
-# returns theta in degrees based on right-hand rule with +X-axis as 0
-def calculate_theta(point1,point2):
+# returns theta in radians based on right-hand rule with +X-axis as 0
+def calculate_theta(body_pt,dir_pt):
+    x = dir_pt[0] - body_pt[0]
+    y = dir_pt[1] - body_pt[1]
+    if x == 0:
+        theta = 0
+    else:
+        theta = math.atan(float(y)/x)
 
+    if x < 0: # quad II or III
+        theta += math.radians(180)
+    else if y < 0: # quad IV
+        theta += math.radians(360)
+
+    return theta
 
 # returns (x,y,theta)
 def find_robot():
