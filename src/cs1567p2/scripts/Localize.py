@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import math
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import *
 from cs1567p2.msg import *
@@ -162,6 +163,7 @@ def find_center(mask,index):
     mask = list(mask)
     # return point that is average of greatest/least y and x values
     pt_color = mask.data[index:index+3]
+    
     color = pt_color
     up = 0
     i = 0
@@ -199,14 +201,29 @@ def find_center(mask,index):
     y = (up + down)/2
     return (x,y)
 
-def find_center_near(points, color, loc, dist):
-    # returns point that is center of points, but within dist::int distance of loc point::(x,y)
+def pick_center_near(centers, color, point, dist):
+    # returns center::(x,y) that is closest to dist::int distance of point::(x,y)
     print "find center near"
+    best_match = centers[0]
+    a = math.fabs(point[0]-centers[0][0])
+    b = math.fabs(point[1]-centers[0][1])
+    best_dist = math.sqrt(a**2 + b**2) # pythagorean
+    for x in centers:
+        a = math.fabs(point[0]-centers[k][0])
+        b = math.fabs(point[1]-centers[k][1])
+        new_dist = math.sqrt(a**2 + b**2)
+        if math.fabs(new_dist - dist) < math.fabs(best_dist - dist):
+            best_dist = new_dist
+            best_match = centers[k]
+    return best_match
 
-def merge_xy_kinects(top_points, mid_points, bot_points):
-    # return single merged list of points with (x,y) relative to global center
-    # use this to take the two "masked" images into one big image before finding centers
-    print "merge xy"
+def convertToFloorXY(cpX,cpY,mask):
+    x = cpX
+    y = 0
+    if mask == "mid":
+        y = cpY + (mid_mask.height/2)
+    if mask == "bot":
+        y = cpY + (bot_mask.height/2)
 
 # note: filter a list with newlist = [item for item in oldlist if item.someattribute >= someval]
 
@@ -216,6 +233,7 @@ def blobWidthHeight(mask,index):
     minSize = 100 #px
     # check up and down (row)
     pt_color = mask.data[index:index+3]
+
     color = pt_color
     up = 0
     i = 0
@@ -251,7 +269,10 @@ def blobWidthHeight(mask,index):
 
     return (left+right,up+down)
 
-
+def getXYFromImageXY(ix,iy,cloud_points):
+    data_out = pc2.read_points(cloud_points, field_names=None, skip_nans=True, uvs=[[ix,iy]]) # list of 4-tuples
+    four_tuple = data_out[0]
+    return four_tuple[0],four_tuple[1]
 
 def findUniqueCenters():
     minSize = 10
@@ -259,27 +280,31 @@ def findUniqueCenters():
     bot_centers = []
     mid_data = list(mid_mask.data)
     bot_data = list(bot_mask.data)
-    k = 0
-    while k < len(mid_data):
-        if mid_data[k] != 0:
-            x,y = blobWidthHeight(mid_mask,k)
+    for k in xrange(mid_mask.width*mid_mask.height):
+        if mid_data[k*3] != 0:
+            x,y = blobWidthHeight(mid_mask,k*3)
             print "blob:",x,y
             if x > minSize and y > minSize:
-                center = find_center(mid_mask,k)
+                center = find_center(mid_mask,k*3)
                 if center not in mid_centers:
                     mid_centers.append(center)
-        k += 3
     print mid_centers
-    k = 0
-    while k < len(bot_data):
-        if bot_data[k] != 0:
-            x,y = blobWidthHeight(bot_mask,k)
+    for k in xrange(bot_mask.width*bot_mask.height):
+        if bot_data[k*3] != 0:
+            x,y = blobWidthHeight(bot_mask,k*3)
             if x > minSize and y > minSize:
-                center = find_center(bot_mask,k)
+                center = find_center(bot_mask,k*3)
                 if center not in bot_centers:
                     bot_centers.append(center)
-        k += 3
     print bot_centers
+
+# returns theta in degrees based on right-hand rule with +X-axis as 0
+def calculate_theta(point1,point2):
+
+
+# returns (x,y,theta)
+def find_robot():
+    print "find robot"
  
 
 ###############################################
