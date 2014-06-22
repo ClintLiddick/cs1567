@@ -78,10 +78,12 @@ def mid_image_callback(message):
     mid_mask.is_bigendian = message.is_bigendian
     mid_mask.step = message.step
 
-    if message.encoding == "bgr8":
-        mid_mask.data = mask_image(message)
+    #if message.encoding == "bgr8":
+    mid_mask.data = mask_image(message)
+    """
     else:
         mid_mask.data = ""
+    """
     kinect3pub.publish(mid_mask)
     print "done mid"
 
@@ -209,10 +211,9 @@ def pick_center_near(centers, point, dist):
     b = math.fabs(point[1]-centers[0][1])
     best_dist = math.hypot(a,b) # pythagorean
     for x in centers:
-        if
         a = math.fabs(point[0]-centers[k][0])
         b = math.fabs(point[1]-centers[k][1])
-        new_dist = math.sqrt(a**2 + b**2)
+        new_dist = math.hypot(a,b)
         if math.fabs(new_dist - dist) < math.fabs(best_dist - dist):
             best_dist = new_dist
             best_match = centers[k]
@@ -281,6 +282,8 @@ def findUniqueCenters():
     bot_centers = []
     mid_data = list(mid_mask.data)
     bot_data = list(bot_mask.data)
+    print "fuc size:",mid_mask.width*mid_mask.height
+    print "md len:",len(mid_data)
     for k in xrange(mid_mask.width*mid_mask.height):
         if mid_data[k*3] != 0:
             x,y = blobWidthHeight(mid_mask,k*3)
@@ -310,7 +313,7 @@ def calculate_theta(body_pt,dir_pt):
 
     if x < 0: # quad II or III
         theta += math.radians(180)
-    else if y < 0: # quad IV
+    elif y < 0: # quad IV
         theta += math.radians(360)
 
     return theta
