@@ -22,6 +22,9 @@ top_mask = Image()
 mid_mask = Image()
 bot_mask = Image()
 
+mid_centers = []
+bot_centers = []
+
 top_cloud_points = (None,None,None,None)
 mid_cloud_points = (None,None,None,None)
 bot_cloud_points = (None,None,None,None)
@@ -40,7 +43,7 @@ def mask_image(message):
                 byte_array[3*index+1] = chr(color_mask_list[k][1])
                 byte_array[3*index+2] = chr(color_mask_list[k][2])
             else:
-                # chr(i) returns a byte ("ascii") whose value is i
+                # chr(i) returns a byte/char ("ascii") whose value is i
                 byte_array[3*index] = chr(0) # each pixel = 3 bytes, 1 for each color BGR
                 byte_array[3*index+1] = chr(0)
                 byte_array[3*index+2] = chr(0)
@@ -67,10 +70,7 @@ def top_image_callback(message):
     print "done top"
         
 def mid_image_callback(message):
-    global color_mask_list
     global mid_mask
-    global threshold
-    global kinect3pub
     mid_mask = Image()
     mid_mask.height = message.height
     mid_mask.width = message.width
@@ -85,6 +85,7 @@ def mid_image_callback(message):
         mid_mask.data = ""
     """
     kinect3pub.publish(mid_mask)
+    findUniqueCentersMID()
     print "done mid"
 
 def bot_image_callback(message):
@@ -103,6 +104,7 @@ def bot_image_callback(message):
     else:
         bot_mask.data = ""
     kinect2pub.publish(bot_mask)
+    findUniqueCentersBOT()
     print "done bot"
 
 
@@ -162,24 +164,24 @@ def colorsMatch(first,second):
     return first[0] == second[0] and first[1] == second[1] and first[2] == second[2]
 
 def find_center(mask,index):
-    mask = list(mask)
+    mask_data = list(mask.data)
     # return point that is average of greatest/least y and x values
-    pt_color = mask.data[index:index+3]
+    pt_color = mask_data[index:index+3]
     
     color = pt_color
     up = 0
     i = 0
     while i >= index and colorsMatch(color,pt_color):
         i += mask.width * 3
-        color = mask.data[index-i:index-i+3]
+        color = mask_data[index-i:index-i+3]
         up += 1
 
     color = pt_color
     down = 0
     i = 0
-    while i < (mask.height*3 - index) and colorsMatch(color,pt_color):
+    while (len(mask_data) - i) > mask.width*3 and colorsMatch(color,pt_color):
         i += mask.width * 3
-        color = mask.data[index+i:index+i+3]
+        color = mask_data[index+i:index+i+3]
         down += 1
 
     # check left right (col)
@@ -188,7 +190,7 @@ def find_center(mask,index):
     i = 0
     while i <= (index % mask.width) and colorsMatch(color,pt_color):
         i += 3
-        color = mask.data[index-i:index-i+3]
+        color = mask_data[index-i:index-i+3]
         left += 1
 
     color = pt_color
@@ -196,12 +198,12 @@ def find_center(mask,index):
     i = 0
     while i <= (mask.width - (index % mask.width)) and colorsMatch(color,pt_color):
         i += 3
-        color = mask.data[index+i:index+i+3]
+        color = mask_data[index+i:index+i+3]
         up += 1
 
-    x = (right + left)/2
-    y = (up + down)/2
-    return (x,y)
+    x = right - left
+    y = down - up
+    return (x,y) #offset from provided index
 
 def pick_center_near(centers, point, dist):
     # returns center::(x,y) that is closest to dist::int distance of point::(x,y)
@@ -230,26 +232,26 @@ def convertToFloorXY(cpX,cpY,mask):
 # note: filter a list with newlist = [item for item in oldlist if item.someattribute >= someval]
 
 def blobWidthHeight(mask,index):
-    mask = list(mask)
+    mask_data = list(mask.data)
     # sum of distance from point that is still same color >= some threshold
     minSize = 100 #px
     # check up and down (row)
-    pt_color = mask.data[index:index+3]
+    pt_color = mask_data[index:index+3]
 
     color = pt_color
     up = 0
     i = 0
     while i >= index and colorsMatch(color,pt_color):
         i += mask.width * 3
-        color = mask.data[index-i:index-i+3]
+        color = mask_data[index-i:index-i+3]
         up += 1
 
     color = pt_color
     down = 0
     i = 0
-    while i < (mask.height*3 - index) and colorsMatch(color,pt_color):
+    while (len(mask_data) - i) > mask.width*3 and colorsMatch(color,pt_color):
         i += mask.width * 3
-        color = mask.data[index+i:index+i+3]
+        color = mask_data[index+i:index+i+3]
         down += 1
 
     # check left right (col)
@@ -258,7 +260,7 @@ def blobWidthHeight(mask,index):
     i = 0
     while i <= (index % mask.width) and colorsMatch(color,pt_color):
         i += 3
-        color = mask.data[index-i:index-i+3]
+        color = mask_data[index-i:index-i+3]
         left += 1
 
     color = pt_color
@@ -266,7 +268,7 @@ def blobWidthHeight(mask,index):
     i = 0
     while i <= (mask.width - (index % mask.width)) and colorsMatch(color,pt_color):
         i += 3
-        color = mask.data[index+i:index+i+3]
+        color = mask_data[index+i:index+i+3]
         up += 1
 
     return (left+right,up+down)
@@ -276,32 +278,53 @@ def getXYFromImageXY(ix,iy,cloud_points):
     four_tuple = data_out[0]
     return four_tuple[0],four_tuple[1]
 
-def findUniqueCenters():
-    minSize = 10
-    mid_centers = []
-    bot_centers = []
-    mid_data = list(mid_mask.data)
+def findUniqueCentersBOT():
+    global bot_centers
+    minSize = 200
+    new_bot_centers = []
     bot_data = list(bot_mask.data)
-    print "fuc size:",mid_mask.width*mid_mask.height
-    print "md len:",len(mid_data)
-    for k in xrange(mid_mask.width*mid_mask.height):
-        if mid_data[k*3] != 0:
-            x,y = blobWidthHeight(mid_mask,k*3)
-            print "blob:",x,y
-            if x > minSize and y > minSize:
-                center = find_center(mid_mask,k*3)
-                if center not in mid_centers:
-                    mid_centers.append(center)
-    print mid_centers
-    for k in xrange(bot_mask.width*bot_mask.height):
-        if bot_data[k*3] != 0:
-            x,y = blobWidthHeight(bot_mask,k*3)
-            if x > minSize and y > minSize:
-                center = find_center(bot_mask,k*3)
-                if center not in bot_centers:
-                    bot_centers.append(center)
-    print bot_centers
+    try:
+        for k in xrange(0,bot_mask.width*bot_mask.height,10):
+            if bot_data[k*3] != 0:
+                x,y = blobWidthHeight(bot_mask,k*3)
+                if x > minSize and y > minSize:
+                    offset = find_center(bot_mask,k*3)
+                    center_index = k*3 + offset[0] + offset[1]*bot_mask.width
+                    center = (center_index/bot_mask.width,center_index%bot_mask.width) #row,col
+                    if center not in new_bot_centers:
+                        new_bot_centers.append(center)
+    except IndexError:
+        print "BOT   OUT OF BOUNDS!!!! WHY????????????"
+        
+    print new_bot_centers
+    bot_centers = new_bot_centers
+          
+def findUniqueCentersMID():
+    global mid_centers
+    minSize = 200
+    new_mid_centers = []
+    print "mid size:",mid_mask.width*mid_mask.height
+    mid_data = list(mid_mask.data)
+    print "mid len:",len(mid_data)
+    try:
+        for k in xrange(0,mid_mask.width*mid_mask.height,10):
+          if mid_data[k*3] != 0:
+                x,y = blobWidthHeight(mid_mask,k*3)
+                #print "blob:",x,y
+                if x > minSize and y > minSize:
+                    offset = find_center(mid_mask,k*3)
+                    center_index = k*3 + offset[0] + offset[1]*bot_mask.width
+                    center = (center_index/bot_mask.width,center_index%bot_mask.width) #row,col
+                    if center not in new_mid_centers:
+                        new_mid_centers.append(center)
 
+    except IndexError:
+        print "MID OUT OF BOUNDS!!!! WHY????????????"
+        
+    print new_mid_centers
+    mid_centers = new_mid_centers
+        
+        
 # returns theta in radians based on right-hand rule with +X-axis as 0
 def calculate_theta(body_pt,dir_pt):
     x = dir_pt[0] - body_pt[0]
@@ -332,19 +355,15 @@ def initialize():
     global locpub
     rospy.init_node("localize")
     locpub = rospy.Publisher("/twiki/location",LocationList) #publish your locations
-    kinect1pub = rospy.Publisher("/twiki/top_mask",Image) #test your mask
+    #kinect1pub = rospy.Publisher("/twiki/top_mask",Image) #test your mask
     kinect2pub = rospy.Publisher("/twiki/bot_mask",Image)
     kinect3pub = rospy.Publisher("/twiki/mid_mask",Image)
-    rospy.Subscriber("/kinect1/rgb/image_color", Image, top_image_callback)
-    rospy.Subscriber("/kinect1/depth_registered/points", PointCloud2, top_cloud_callback)
+    #rospy.Subscriber("/kinect1/rgb/image_color", Image, top_image_callback)
+    #rospy.Subscriber("/kinect1/depth_registered/points", PointCloud2, top_cloud_callback)
     rospy.Subscriber("/kinect3/rgb/image_color", Image, mid_image_callback)
     rospy.Subscriber("/kinect3/depth_registered/points", PointCloud2, mid_cloud_callback)
     rospy.Subscriber("/kinect2/rgb/image_color", Image, bot_image_callback)
     rospy.Subscriber("/kinect2/depth_registered/points", PointCloud2, bot_cloud_callback)
-    r = rospy.Rate(.2)
-    while not rospy.is_shutdown():
-        findUniqueCenters()
-        r.sleep()
     rospy.spin()
 
 if __name__ == "__main__":
