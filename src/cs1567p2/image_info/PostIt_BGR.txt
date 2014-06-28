@@ -1,7 +1,0 @@
-BGR = Blue Green Red format
-
-Green Postit: 90,225,220
-Light Pink Postit: 75,150,235
-Dark Pink Postit: 175,120,230
-Red Paper: 110,90,230
-Blue Postit: 200,205,175
