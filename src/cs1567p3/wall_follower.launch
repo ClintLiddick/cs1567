@@ -1,0 +1,3 @@
+<launch>
+<node name="WallFollower" pkg="cs1567p3" type="WallFollower.py"/>
+</launch>
