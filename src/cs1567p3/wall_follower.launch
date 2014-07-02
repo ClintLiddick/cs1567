@@ -1,3 +1,5 @@
 <launch>
+<include file="$(find kobuki_node)/launch/minimal.launch"/>
+<node name="ConstantCommand" pkg="cs1567p3" type="ConstantCommand.py"/>
 <node name="WallFollower" pkg="cs1567p3" type="WallFollower.py"/>
 </launch>

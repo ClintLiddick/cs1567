@@ -1,14 +1,28 @@
 import rospy
+import math
 from cs1567p3.srv import *
 from geometry_msgs.msg import Twist
 from kobuki_msgs.msg import BumperEvent
 from nav_msgs.msg import Odometry
 
+ODOM_RATE = 11
+
+motion_command = Twist()
 const_command_serv = None
-bumped = false
+bumped = False
+
+x_displacement = 0.0
+y_displacement = 0.0
+theta_displacement = 0.0
 
 def odometry_callback(data):
-    # TODO
+    global x_displacement
+    global y_displacement
+    global theta_displacement
+    
+    x_displacement = data.pose.pose.position.x
+    y_displacement = data.pose.pose.position.y
+    theta_displacement = 2*math.acos(data.pose.pose.orientation.w)
 
 def bumper_event_callback(data):
     # data is a BumperEvent
@@ -16,18 +30,62 @@ def bumper_event_callback(data):
     # uint8 data.state: 0=released, 1=pressed
     # use ord(uint8) to get number
     # TODO
+    global bumped
+    
+    state = ord(data.state)
+    bumped = True if state == 1 else False
 
 def stop():
-    # TODO
+    motion_command.linear.x = 0
+    motion_command.angular.z = 0
+    const_command_serv(motion_command)
 
+# moves forward until stop() is executed
 def go_forward():
-    # TODO
+    motion_command.linear.x = 0.2
+    const_command_serv(motion_command)
 
-def turn_left():
-    # TODO
+# backs up a constant amount    
+def back_up():
+    r = rospy.Rate(ODOM_RATE)
+    
+    starting_x = x_displacement
+    starting_y = y_displacement
+    
+    while math.hypot((x_displacement - starting_x),(y_displacement - starting_y)) < 0.1\
+            and not rospy.is_shutdown():
+        motion_command.linear.x = -0.2
+        const_command_serv(motion_command)
+        r.sleep()
+    
+    stop()
+    
 
-def turn_right():
-    # TODO    
+# turns left x degrees
+def turn_left(deg):
+    starting_theta = theta_displacement
+    r = rospy.Rate(ODOM_RATE)
+    # theta is increasing while turning left
+    # TODO this might break when completing a whole rotation (theta wraps to 0)
+    while (theta_displacement - starting_theta) < math.radians(deg)\
+            and not rospy.is_shutdown():
+        motion_command.angular.z = 0.3
+        const_command_serv(motion_command)
+        r.sleep()
+    stop()
+
+# turns right x degrees
+def turn_right(deg):
+    starting_theta = theta_displacement
+    r = rospy.Rate(ODOM_RATE)
+    # theta is decreasing while turning right
+    # TODO this might break when completing a whole rotation (theta wraps to 2*PI)
+    while (starting_theta - theta_displacement) < math.radians(deg)\
+            and not rospy.is_shutdown():
+        motion_command.angular.z = -0.3
+        const_command_serv(motion_command)
+        r.sleep()
+    stop()
     
 def follow_wall():
     # TODO
@@ -41,14 +99,36 @@ def follow_wall():
         if bumped:
             back_up()
             stop()
-            turn_right()
+            turn_left()
             stop()
             continue
         else: time > threshold
-            turn_left() // try to hit wall now
+            turn_right() // try to hit wall now
             stop()
             continue
     """
+
+def test_movements():
+    rospy.loginfo('4x back_up then turn_left')
+    for i in range(0,4):
+        back_up()
+        turn_left(20)
+        
+    rospy.loginfo('4x back_up then turn_right')
+    for i in range(0,4):
+        back_up()
+        turn_right(20)
+        
+    r = rospy.Rate(0.5)
+    rospy.loginfo('2x go_forward 1 second then stop')
+    
+    for i in range(0,2):
+        for j in range(0,2):
+            go_forward()
+            r.sleep()
+        stop()
+        r.sleep()
+            
 
 def initialize_commands():
     rospy.init_node('wallsolvernode',anonymous=True)
@@ -60,7 +140,8 @@ def initialize_commands():
     global const_command_serv
     const_command_serv = rospy.ServiceProxy('constant_command', ConstantCommand)
     
-    follow_wall()
+    #follow_wall()
+    test_movements()
 
 if __name__ == '__main__':
     try:
