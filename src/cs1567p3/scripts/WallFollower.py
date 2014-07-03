@@ -10,11 +10,12 @@ from nav_msgs.msg import Odometry
 ODOM_RATE = 11
 LINEAR_SPEED = 0.1
 ANGULAR_SPEED = 0.5
-ANGULAR_SLEEP_TIME = 0.3
+ANGULAR_SLEEP_TIME = 1.0
 
 motion_command = Twist()
 const_command_serv = None
 bumped = False
+number_of_bump_misses = 0
 
 x_displacement = 0.0
 y_displacement = 0.0
@@ -77,7 +78,7 @@ def back_up():
     starting_x = x_displacement
     starting_y = y_displacement
     
-    while math.hypot((x_displacement - starting_x),(y_displacement - starting_y)) < 0.05\
+    while math.hypot((x_displacement - starting_x),(y_displacement - starting_y)) < 0.03\
             and not rospy.is_shutdown():
         try:
             motion_command.linear.x = -LINEAR_SPEED
@@ -132,7 +133,7 @@ def turn_right():
     try:
         motion_command.angular.z = -ANGULAR_SPEED
         const_command_serv(motion_command)
-        rospy.sleep(ANGULAR_SLEEP_TIME)
+        rospy.sleep(ANGULAR_SLEEP_TIME * ((number_of_bump_misses % 4)+1))
     except rospy.ServiceException, e:
         rospy.logerr("Service call failed: %s",e)
     finally:
@@ -159,6 +160,7 @@ def follow_wall():
     """
     r = rospy.Rate(ODOM_RATE)
     time = 0.0
+    global number_of_bump_misses
     while not rospy.is_shutdown():
         go_forward()
         time += 0.1
@@ -168,12 +170,14 @@ def follow_wall():
             back_up()
             turn_left()
             time = 0.0
+            number_of_bump_misses = 0
             continue
         
-        if time > 3.0:
+        if time > 4.0:
             stop()
             turn_right()
             time = 0.0
+            number_of_bump_misses += 1
             continue
         r.sleep()
     
