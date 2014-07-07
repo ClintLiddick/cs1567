@@ -11,6 +11,7 @@ ODOM_RATE = 11
 LINEAR_SPEED = 0.1
 ANGULAR_SPEED = 0.5
 ANGULAR_SLEEP_TIME = 1.0
+ORIGIN_TOLERANCE = 0.05
 
 motion_command = Twist()
 const_command_serv = None
@@ -23,6 +24,8 @@ theta_displacement_w = 0.0
 theta_displacement_z = 0.0
 orientation_w = 0.0
 orientation_z = 0.0
+
+has_left_beginning = False
 
 def odometry_callback(data):
     global x_displacement
@@ -64,7 +67,7 @@ def stop():
         rospy.logerr("Service call failed: %s",e)
 
 # moves forward until stop() is executed
-def go_forward():
+def go_forward_continuous():
     try:
         motion_command.linear.x = 0.1
         const_command_serv(motion_command)
@@ -72,7 +75,7 @@ def go_forward():
         rospy.logerr("Service call failed: %s",e)
 
 # backs up a constant amount    
-def back_up():
+def back_up_unit():
     r = rospy.Rate(ODOM_RATE)
     
     starting_x = x_displacement
@@ -90,7 +93,7 @@ def back_up():
     stop()
     
 # turns left x degrees
-def turn_left():
+def turn_left_unit():
     """
     starting_theta = theta_displacement_w
     rospy.loginfo('turning left starting at theta %f',starting_theta)
@@ -116,7 +119,7 @@ def turn_left():
         stop()
 
 # turns right x degrees
-def turn_right():
+def turn_right_unit():
     """
     starting_theta = theta_displacement_w
     rospy.loginfo('turning right starting at theta %f',starting_theta)
@@ -138,83 +141,113 @@ def turn_right():
         rospy.logerr("Service call failed: %s",e)
     finally:
         stop()
+
+def turn_right_continuous():
+    try:
+        motion_command.angular.z = -ANGULAR_SPEED
+        const_command_serv(motion_command)
+    except rospy.ServiceException, e:
+        rospy.logerr("Service call failed: %s",e)
+        
+def should_continue():
+    global has_left_beginning
+    distance_to_orig = math.hypot(x_displacement,y_displacement)
+    rospy.loginfo('has_left_beginning: {}'.format(has_left_beginning))
+    rospy.loginfo('distance from orig: {}'.format(distance_to_orig))
+    # moved outside the tolerence zone once, so can stop if it enters again
+    if (has_left_beginning):
+        cont = not (distance_to_orig < ORIGIN_TOLERANCE)
+        rospy.loginfo('should_cont: {}'.format(cont))
+        return cont
+    # hadn't left the tolerance zone at last check
+    else: # hadn't left the tolerance zone at last check
+        if (distance_to_orig > ORIGIN_TOLERANCE+0.01):
+            has_left_beginning = True # check if outside tolerance zone
+        return True # always continue in this situation
     
 def follow_wall():
     """
     --algorithm--
     while: not done
-        do: go_forward()
+        do: go_forward_continuous()
         while: not bumped and time_moving_forward < threshold
         // ^^^ needs tight rospy.Rate loop to check
         stop()
         if bumped:
-            back_up()
+            back_up_unit()
             stop()
-            turn_left()
+            turn_left_unit()
             stop()
             continue
         else: time > threshold
-            turn_right() // try to hit wall now
+            turn_right_unit() // try to hit wall now
             stop()
             continue
     """
     r = rospy.Rate(ODOM_RATE)
     time = 0.0
     global number_of_bump_misses
-    while not rospy.is_shutdown():
-        go_forward()
+    while (should_continue() and not rospy.is_shutdown()):
+        go_forward_continuous()
         time += 0.1
         
         if bumped:
             stop()
-            back_up()
-            turn_left()
+            back_up_unit()
+            turn_left_unit()
             time = 0.0
             number_of_bump_misses = 0
             continue
-        
+        # normal
+        """
         if time > 4.0:
             stop()
-            turn_right()
+            turn_right_unit()
             time = 0.0
             number_of_bump_misses += 1
+            continue
+        # curving
+        """
+        if time > 4.0:
+            turn_right_continuous()
+            time = 0.0
             continue
         r.sleep()
     
 
 def test_movements():
     """
-    rospy.loginfo('4x back_up then turn_left')
+    rospy.loginfo('4x back_up_unit then turn_left_unit')
     for i in range(0,4):
-        back_up()
-        turn_left(20)
+        back_up_unit()
+        turn_left_unit(20)
     """ 
-    rospy.loginfo('4x back_up then turn_right')
+    rospy.loginfo('4x back_up_unit then turn_right_unit')
     for i in range(0,4):
-        back_up()
-        turn_right()
+        back_up_unit()
+        turn_right_unit()
         
     r = rospy.Rate(0.5)
-    rospy.loginfo('2x go_forward 1 second then stop')
+    rospy.loginfo('2x go_forward_continuous 1 second then stop')
     
     for i in range(0,2):
         for j in range(0,2):
-            go_forward()
+            go_forward_continuous()
             r.sleep()
         stop()
         r.sleep()
     """
-    rospy.loginfo('turn_right in complete circle')
+    rospy.loginfo('turn_right_unit in complete circle')
     for i in range(0,10):
-        turn_right(89)
+        turn_right_unit(89)
         
-    rospy.loginfo('turn_left in complete circle')
+    rospy.loginfo('turn_left_unit in complete circle')
     for i in range(0,10):
-        turn_left(89)
+        turn_left_unit(89)
     """
 
 def initialize_commands():
-    rospy.init_node('wallsolvernode',anonymous=True,log_level=rospy.WARN)
+    rospy.init_node('wallsolvernode',anonymous=True)
     rospy.wait_for_service('constant_command')
     
     rospy.Subscriber('/mobile_base/events/bumper',BumperEvent,bumper_event_callback)
@@ -225,6 +258,7 @@ def initialize_commands():
     
     follow_wall()
     #test_movements()
+    stop()
 
 if __name__ == '__main__':
     try:
