@@ -10,8 +10,8 @@ from nav_msgs.msg import Odometry
 ODOM_RATE = 11
 LINEAR_SPEED = 0.1
 ANGULAR_SPEED = 0.5
-ANGULAR_SLEEP_TIME = 1.0
-ORIGIN_TOLERANCE = 0.05
+ANGULAR_SLEEP_TIME = 1.3
+ORIGIN_TOLERANCE = 0.5
 
 motion_command = Twist()
 const_command_serv = None
