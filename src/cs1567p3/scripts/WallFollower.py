@@ -110,7 +110,7 @@ def should_continue():
         return cont
     # hadn't left the tolerance zone at last check
     else: # hadn't left the tolerance zone at last check
-        if (distance_to_orig > ORIGIN_TOLERANCE+0.01):
+        if (distance_to_orig > ORIGIN_TOLERANCE+0.2):
             has_left_beginning = True # check if outside tolerance zone
         return True # always continue in this situation
     
