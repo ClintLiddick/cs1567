@@ -1,64 +1,85 @@
 #!/usr/bin/env python
 
-import cv2 
+import cv2
+import numpy
 
-MASK_THRESHOLD = 20
+# color range used to mask image
+lower_blue = numpy.array([90,0,0],numpy.uint8)
+upper_blue = numpy.array([130,255,255],numpy.uint8)
+
+lowH = 0
+highH = 179
+
+lowS = 0
+highS = 255
+
+lowV = 0
+highV = 255
 
 webcam = cv2.VideoCapture(0)
 cv2.namedWindow("orig")
-cv2.namedWindow("mask")
+cv2.namedWindow("masked")
+cv2.namedWindow("gray")
+cv2.namedWindow("binary")
 
-# img is list of lists, 1 per row/col (3D array, since each pixel is list of 3 uints)
-def get_image():
-    retval, img = webcam.read()
-    return img
+cv2.namedWindow('control')
+
+def updateHSV():
+    global lowH
+    global highH
+    global lowS
+    global highS
+    global lowV
+    global highV
+    
+    lowH  = cv2.getTrackbarPos('lowH','control')
+    highH = cv2.getTrackbarPos('highH','control')
+    lowS  = cv2.getTrackbarPos('lowS','control')
+    highS = cv2.getTrackbarPos('highS','control')
+    lowV  = cv2.getTrackbarPos('lowV','control')
+    highV = cv2.getTrackbarPos('highV','control')
 
 # img is [[[bgr],[bgr]...],[...]...]
-# color is [b,g,r]    
-def mask_image(img,color):
-    mask = img.copy()
-    width,height,_ = img.shape
-    for j in range(height):
-        for i in range(width):
-            b = img.item(i,j,0)
-            g = img.item(i,j,1)
-            r = img.item(i,j,2)
-            if abs(b - color[0]) > MASK_THRESHOLD\
-                    and abs(g - color[1]) > MASK_THRESHOLD\
-                    and abs(r - color[2]) > MASK_THRESHOLD:
-                mask.itemset((i,j,0),0)
-                mask.itemset((i,j,1),0)
-                mask.itemset((i,j,2),0)
-            else:
-                mask.itemset((i,j,0),255)
-                mask.itemset((i,j,1),255)
-                mask.itemset((i,j,2),255)  
-    return mask
 
-def binary_img(img):
-    _,binary = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
-    return binary
-    
-def gray_img(img):
-    return cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+def nothing():
+    pass
 
-# clear first few frames fro ramp-up    
-for x in range(30):
-    temp = get_image()
+cv2.createTrackbar('lowH','control',0,179,nothing)
+cv2.createTrackbar('highH','control',0,179,nothing)
+cv2.createTrackbar('lowS','control',0,255,nothing)
+cv2.createTrackbar('highS','control',0,255,nothing)
+cv2.createTrackbar('lowV','control',0,255,nothing)
+cv2.createTrackbar('highV','control',0,255,nothing)
+
 while True:
-    img = get_image()
-    mask = mask_image(img,[185,196,112])
-    gray = gray_img(img)
-    binary = binary_img(gray)
-    contours,_ = cv2.findContours(binary,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
-    moments = cv2.moments(contours[0])
+    _,img = webcam.read()
+    updateHSV()
+    hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv_img, numpy.array([lowH,lowS,lowV],numpy.uint8),\
+            numpy.array([highH,highS,highV],numpy.uint8))
+    #masked_img = cv2.bitwise_and(img,img, mask=mask)
+    #gray = cv2.cvtColor(masked_img,cv2.COLOR_BGR2GRAY)
+    _,binary = cv2.threshold(mask,127,255,cv2.THRESH_BINARY)
+    binary = cv2.erode(binary,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)))
+    binary = cv2.dilate(binary,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)))
+
+    binary = cv2.dilate(binary,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)))
+    binary = cv2.erode(binary,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)))
+    #contours,_ = cv2.findContours(binary,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    moments = cv2.moments(binary)
     if (moments['m00'] > 0.0):
+        # find the "center of gravity"
         center_x = int(moments['m10']/moments['m00'])
         center_y = int(moments['m01']/moments['m00'])
         print center_x,center_y
     print moments['m00']
-    cv2.imshow("orig",binary)
-    cv2.imshow("mask",mask)
+
+    #cv2.drawContours(img,contours,-1,(0,255,0),3)
+    
+    cv2.imshow("orig",img)
+    cv2.imshow("masked",mask)
+    #cv2.imshow("gray",gray)
+    cv2.imshow("binary",binary)
     key = cv2.waitKey(20)
     if key in [27, ord('Q'), ord('q')]:
         break
