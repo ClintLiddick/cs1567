@@ -47,14 +47,10 @@ def stop():
 """
 
 def initialize_commands():
-    rospy.init_node('manualangletestnode',anonymous=True)
-    #rospy.wait_for_service('constant_command')
-
+    rospy.init_node('manualangletestnode',anonymous=True,loglevel=rospy.DEBUG)
     rospy.Subscriber('/odom',Odometry,odometry_callback)
+    rospy.spin()
 
-    #global const_command_serv
-    #const_command_serv = rospy.ServiceProxy('constant_command', ConstantCommand)
-    
 if __name__ == '__main__':
     try:
         initialize_commands()
