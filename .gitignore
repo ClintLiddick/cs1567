@@ -9,8 +9,6 @@ bin/
 # ignore all files ending with ~
 *~
 
-# ignore text files
-*.txt
 # ignore .metadata directory just in case
 .metadata/
 # ignore certain files
