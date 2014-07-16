@@ -47,8 +47,9 @@ def stop():
 """
 
 def initialize_commands():
-    rospy.init_node('manualangletestnode',anonymous=True,loglevel=rospy.DEBUG)
+    rospy.init_node('manualangletestnode',anonymous=True,log_level=rospy.DEBUG)
     rospy.Subscriber('/odom',Odometry,odometry_callback)
+    rospy.loginfo('started')
     rospy.spin()
 
 if __name__ == '__main__':
