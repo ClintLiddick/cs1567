@@ -12,6 +12,7 @@ UInt32
 3 = right third
 """
 
+import rospy
 import cv2
 import numpy
 import std_msgs.msg
@@ -96,7 +97,7 @@ def run():
         elif (center_x < (2*cam_width/3)):
             # middle third
             pub_data = 2
-        elif (center_x < (cam_width):
+        elif (center_x < (cam_width)):
             # right third
             pub_data = 3
 
@@ -111,6 +112,7 @@ def run():
 def setup_control_panel():
     """Setup color tuning panel"""
     cv2.namedWindow('control',flags=cv2.WINDOW_NORMAL)
+    rospy.logdebug('control panel open')
     cv2.createTrackbar('lowH','control',0,179,nothing)
     cv2.createTrackbar('highH','control',179,179,nothing)
     cv2.createTrackbar('lowS','control',0,255,nothing)
@@ -132,10 +134,12 @@ def init():
     global pub
     pub = rospy.Publisher('tracked_object_position',std_msgs.msg.UInt32, queue_size=10)
     global webcam
-    webcam = cv2.VideoCapture(0)
     cv2.namedWindow('masked')
+    rospy.logdebug('masked window open')
     cv2.namedWindow('binary')
+    rospy.logdebug('binary window open')
     setup_control_panel()
+    webcam = cv2.VideoCapture(0)
     set_img_dimensions()
     run()
 

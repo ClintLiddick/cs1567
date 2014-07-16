@@ -28,7 +28,7 @@ def odometry_callback(data):
     w = data.pose.pose.orientation.w
     z = data.pose.pose.orientation.z
 
-    x_theta_new,y_theta_new,z_theta_new = euler_from_quaternion([w,0,0,z])
+    x_theta_new,y_theta_new,z_theta_new = euler_from_quaternion([0,0,z,w])
     if (x_theta_new != x_theta_prev or y_theta_new != y_theta_prev or z_theta_new != z_theta_prev):
         x_theta_prev = x_theta_new
         y_theta_prev = y_theta_new
