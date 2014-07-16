@@ -3,7 +3,7 @@
   <name>cs1567p4</name>
   <version>0.0.0</version>
   <description>3-robot pong</description>
-  <maintainer email="pitt.edu">nobody</maintainer>
+  <maintainer email="nobody@pitt.edu">nobody</maintainer>
   <license>MIT</license>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>kobuki_node</build_depend>
