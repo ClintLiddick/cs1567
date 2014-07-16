@@ -1,0 +1,3 @@
+<launch>
+<node name="ObjectTrackerNode" pkg="experiments" type="ObjectTracker.py" output="screen"/>
+</launch>
