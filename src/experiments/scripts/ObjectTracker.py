@@ -108,6 +108,7 @@ def run():
         cv2.circle(mask,(center_x,center_y),2,[0,255,0],2)
         cv2.imshow('masked',mask)
         cv2.imshow('binary',binary)
+	cv2.waitKey(1)
 
 def setup_control_panel():
     """Setup color tuning panel"""
