@@ -51,9 +51,13 @@ def run():
             stay()
 
 def init():
-    rospy.init_node('paddle_node',anonymous=True)
+    rospy.logdebug('init called')
+    rospy.init_node('paddle_node',anonymous=True,log_level=rospy.INFO)
+    rospy.logdebug('node init')
     rospy.wait_for_service('constant_command')
+    rospy.logdebug('constant_command service')
     rospy.Subscriber('paddle1_obj',UInt32,object_position_callback)
+    rospy.logdebug('subscribed')
     
     global const_command_serv
     const_command_serv = rospy.ServiceProxy('constant_command', ConstantCommand)
@@ -61,5 +65,6 @@ def init():
 
 if __name__ == '__main__':
     try:
+        rospy.loginfo('started paddle')
         init()
     except rospy.ROSInterruptException: pass
