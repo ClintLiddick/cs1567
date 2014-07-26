@@ -15,7 +15,7 @@ UInt32
 import rospy
 import cv2
 import numpy
-import std_msgs.msg
+from std_msgs.msg import *
 
 # OpenCV HSV value ranges
 lowH = 0
@@ -133,7 +133,7 @@ def init():
     """Init node, global data, windows, and publisher"""
     rospy.init_node('objecttrackernode',anonymous=True)
     global pub
-    pub = rospy.Publisher('/pong/ball/ROBOT_NUMBER',std_msgs.msg.UInt32, queue_size=10)
+    pub = rospy.Publisher('paddle1_obj',UInt32, queue_size=10)
     global webcam
     cv2.namedWindow('masked')
     rospy.logdebug('masked window open')
