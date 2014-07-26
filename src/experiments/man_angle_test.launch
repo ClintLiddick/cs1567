@@ -1,3 +1,4 @@
 <launch>
 <node name="ManualAngleTest" pkg="experiments" type="ManualAngleTest.py" output="screen"/>
+<node name="ConstantCommand" pkg="experiments" type="ConstantCommand.py" />
 </launch>

@@ -14,6 +14,9 @@ x_theta_prev = 0.0
 y_theta_prev = 0.0
 z_theta_prev = 0.0
 
+motion_command = Twist()
+const_command_serv = None
+
 has_left_beginning = False
 
 def odometry_callback(data):
@@ -22,7 +25,7 @@ def odometry_callback(data):
     global x_theta_prev
     global y_theta_prev
     global z_theta_prev
-    
+    global const_command_serv
     #x_displacement = data.pose.pose.position.x
     #y_displacement = data.pose.pose.position.y
     w = data.pose.pose.orientation.w
@@ -34,6 +37,10 @@ def odometry_callback(data):
         y_theta_prev = y_theta_new
         z_theta_prev = z_theta_new
         rospy.loginfo('x: {}\ny: {}\nz: {}'.format(x_theta_prev,y_theta_prev,z_theta_prev))
+
+def move_forward():
+    motion_command.linear.x = 0.2
+    const_command_serv(motion_command)
 
 """
 def stop():
@@ -48,9 +55,14 @@ def stop():
 
 def initialize_commands():
     rospy.init_node('manualangletestnode',anonymous=True,log_level=rospy.DEBUG)
+    print "YEAH"
+    rospy.wait_for_service('constant_command')
+    print "YEAH"
     rospy.Subscriber('/odom',Odometry,odometry_callback)
+    global const_command_serv
+    const_command_serv = rospy.ServiceProxy('constant_command', ConstantCommand)
     rospy.loginfo('started')
-    rospy.spin()
+    move_forward()
 
 if __name__ == '__main__':
     try:
