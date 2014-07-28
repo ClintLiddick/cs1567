@@ -3,20 +3,23 @@ import rospy
 from std_msgs.msg import UInt32
 from cs1567p4.srv import *
 from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion
 
-LINEAR_SPEED = 0.3
+LINEAR_SPEED = 0.2
 
 object_position = 0
 motion_command = Twist()
 constant_command_serv = None
 
-def object_position_callback(data):
-    rospy.loginfo('position: {}'.format(data.data))
+def odom_callback(data):
     w = data.pose.pose.orientation.w
     z = data.pose.pose.orientation.z
     x,y,z = euler_from_quaternion([0,0,z,w])
     rospy.loginfo('heading: {} {} {}'.format(x,y,z))
+
+def object_position_callback(data):
+    rospy.loginfo('position: {}'.format(data.data))
     global object_position
     object_position = data.data
 
@@ -62,7 +65,9 @@ def init():
     rospy.wait_for_service('constant_command')
     rospy.logdebug('constant_command service')
     rospy.Subscriber('paddle1_obj',UInt32,object_position_callback)
-    rospy.logdebug('subscribed')
+    rospy.logdebug('subscribed object position')
+    rospy.Subscriber('/odom',Odometry,odom_callback)
+    rospy.logdebug('subscribed odom')
     
     global const_command_serv
     const_command_serv = rospy.ServiceProxy('constant_command', ConstantCommand)
