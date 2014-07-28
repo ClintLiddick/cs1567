@@ -21,7 +21,7 @@ def odom_callback(data):
     z = data.pose.pose.orientation.z
     global heading
     _,_,heading = euler_from_quaternion([0,0,z,w])
-    rospy.loginfo('heading: {} {} {}'.format(x,y,z))
+    rospy.loginfo('heading: {}'.format(heading))
 
 def object_position_callback(data):
     rospy.loginfo('position: {}'.format(data.data))
@@ -29,7 +29,7 @@ def object_position_callback(data):
     object_position = data.data
 
 def correct_heading():
-    if heading > THETA_DELTA:
+    if heading < -THETA_DELTA:
         # correct left
         motion_command.angular.z = ANGULAR_SPEED
         const_command_serv(motion_command)
@@ -38,7 +38,7 @@ def correct_heading():
             r.sleep()
         motion_command.angular.z = 0
         const_command_serv(motion_command)
-    elif heading < -THETA_DELTA:
+    elif heading > THETA_DELTA:
         # correct right
         motion_command.angular.z = -ANGULAR_SPEED
         const_command_serv(motion_command)
