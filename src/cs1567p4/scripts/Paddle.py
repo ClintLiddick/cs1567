@@ -33,18 +33,11 @@ def correct_heading():
         # correct left
         motion_command.angular.z = ANGULAR_SPEED
         const_command_serv(motion_command)
-        r = rospy.Rate(10)
-        while heading > THETA_DELTA:
-            r.sleep()
-        motion_command.angular.z = 0
-        const_command_serv(motion_command)
     elif heading > THETA_DELTA:
         # correct right
         motion_command.angular.z = -ANGULAR_SPEED
         const_command_serv(motion_command)
-        r = rospy.Rate(10)
-        while heading < THETA_DELTA:
-            r.sleep()
+    else:
         motion_command.angular.z = 0
         const_command_serv(motion_command)
 
@@ -70,6 +63,7 @@ def stay():
     #forward
     try:
         motion_command.linear.x = 0
+        motion_command.angular.z = 0
         const_command_serv(motion_command)
     except rospy.ServiceException, e:
         rospy.logerr("Service call failed: %s",e)
