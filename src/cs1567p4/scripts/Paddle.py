@@ -3,6 +3,7 @@ import rospy
 from std_msgs.msg import UInt32
 from cs1567p4.srv import *
 from geometry_msgs.msg import Twist
+from tf.transformations import euler_from_quaternion
 
 LINEAR_SPEED = 0.3
 
@@ -12,6 +13,10 @@ constant_command_serv = None
 
 def object_position_callback(data):
     rospy.loginfo('position: {}'.format(data.data))
+    w = data.pose.pose.orientation.w
+    z = data.pose.pose.orientation.z
+    x,y,z = euler_from_quaternion([0,0,z,w])
+    rospy.loginfo('heading: {} {} {}'.format(x,y,z))
     global object_position
     object_position = data.data
 
