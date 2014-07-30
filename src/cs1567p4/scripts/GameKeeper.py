@@ -22,8 +22,8 @@ def score_notif(led):
 
 
 def print_scores():
-    print 'Paddle 1: {}'.format(PADDLE_1_SCORE))
-    print 'Paddle 2: {}'.format(PADDLE_2_SCORE))
+    print 'Paddle 1: {}'.format(PADDLE_1_SCORE)
+    print 'Paddle 2: {}'.format(PADDLE_2_SCORE)
 
 
 def points_callback(data):
@@ -31,11 +31,11 @@ def points_callback(data):
     global PADDLE_2_SCORE
     if data.data == 1:
         PADDLE_1_SCORE+=1
-        print '***Point for Paddle 1!***')
+        print '***Point for Paddle 1!***'
         score_notif(Led.GREEN)
     if data.data == 2:
         PADDLE_2_SCORE+=1
-        print '***Point for Paddle 2!***')
+        print '***Point for Paddle 2!***'
         score_notif(Led.RED)
     print_scores()
 
