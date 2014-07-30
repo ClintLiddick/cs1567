@@ -27,8 +27,8 @@ def print_scores():
 
 
 def points_callback(data):
-	global PADDLE_1_SCORE
-	global PADDLE_2_SCORE
+    global PADDLE_1_SCORE
+    global PADDLE_2_SCORE
     if data.data == 1:
         PADDLE_1_SCORE+=1
         rospy.loginfo('Point for Paddle 1!')
@@ -38,6 +38,7 @@ def points_callback(data):
         rospy.loginfo('Point for Paddle 2!')
         score_notif(Led.RED)
     print_scores()
+
 
 
 def end():
@@ -59,7 +60,7 @@ def play():
     elif PADDLE_2_SCORE == WIN_SCORE:
         winner = 'Paddle 2'
     else:
-    	winner = 'NONE'
+        winner = 'NONE'
     rospy.loginfo('Winner: {}!'.format(winner))
 
 
