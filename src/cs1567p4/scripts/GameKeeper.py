@@ -12,13 +12,17 @@ WIN_SCORE = 3
 led_pub = None
 sound_pub = None
 
-def score_notif(led):
-    sound_pub.publish(Sound.OFF)
-    for x in range(4):
+
+def blink_led(times,led):
+    for x in range(times):
         led_pub.publish(led)
         rospy.sleep(0.2)
         led_pub.publish(Led.BLACK)
         rospy.sleep(0.2)
+
+def score_notif(led):
+    sound_pub.publish(Sound.OFF)
+    blink_led(4,led)
 
 
 def print_scores():
@@ -55,15 +59,18 @@ def play():
         rospy.sleep(0.3)
     print_scores()
     winner = ''
+    led = Led.BLACK
     if PADDLE_1_SCORE == WIN_SCORE:
         winner = 'Paddle 1'
+        led = Led.GREEN
     elif PADDLE_2_SCORE == WIN_SCORE:
         winner = 'Paddle 2'
+        led = Led.RED
     else:
         winner = 'NONE'
     print 'Winner: {}!'.format(winner)
-    led_pub.publish(Led.BLACK)
     sound_pub.publish(Sound.CLEANINGSTART)
+    blink_led(10,led)
 
 
 
