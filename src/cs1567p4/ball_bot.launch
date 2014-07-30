@@ -1,0 +1,4 @@
+<launch>
+<node name="ConstantCommand" pkg="cs1567p4" type="ConstantCommand.py"/>
+<node name="BallBot" pkg="cs1567p4" type="BallBot.py" output="screen"/>
+</launch>
