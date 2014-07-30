@@ -13,24 +13,24 @@ led_pub = None
 sound_pub = None
 
 def score_notif(led):
-	sound_pub.publish(Sound.CLEANINGSTART)
-	for x in range(4):
-		led_pub.publish(led)
-		rospy.sleep(0.2)
-		led_pub.publish(Led.BLACK)
-		rospy.sleep(0.2)
+    sound_pub.publish(Sound.CLEANINGSTART)
+    for x in range(4):
+        led_pub.publish(led)
+        rospy.sleep(0.2)
+        led_pub.publish(Led.BLACK)
+        rospy.sleep(0.2)
 
 
 def print_scores():
-	rospy.loginfo('Paddle 1: {}'.format(PADDLE_1_SCORE))
-	rospy.loginfo('Paddle 2: {}'.format(PADDLE_2_SCORE))
+    rospy.loginfo('Paddle 1: {}'.format(PADDLE_1_SCORE))
+    rospy.loginfo('Paddle 2: {}'.format(PADDLE_2_SCORE))
 
 
 def points_callback(data):
     if data.data == 1:
         PADDLE_1_SCORE+=1
         rospy.loginfo('Point for Paddle 1!')
-		score_notif(Led.GREEN)
+        score_notif(Led.GREEN)
     if data.data == 2:
         PADDLE_2_SCORE+=1
         rospy.loginfo('Point for Paddle 2!')
@@ -48,15 +48,15 @@ def end():
 
 
 def play():
-	while not end() and not rospy.is_shutdown():
-		rospy.sleep(0.3)
-	print_scores()
-	winner = ''
-	if PADDLE_1_SCORE == WIN_SCORE:
-		winner = 'Paddle 1'
-	else:
-		winner = 'Paddle 2'
-	rospy.loginfo('Winner: {}!'.format(winner))
+    while not end() and not rospy.is_shutdown():
+        rospy.sleep(0.3)
+    print_scores()
+    winner = ''
+    if PADDLE_1_SCORE == WIN_SCORE:
+        winner = 'Paddle 1'
+    else:
+        winner = 'Paddle 2'
+    rospy.loginfo('Winner: {}!'.format(winner))
 
 
 def init():
