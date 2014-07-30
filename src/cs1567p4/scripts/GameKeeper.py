@@ -1,33 +1,27 @@
 import rospy
-from cs1567p4.srv import *
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 from std_msgs.msg import UInt32
+from kobuki_msgs import Led
 
 PADDLE_1_SCORE = 0
 PADDLE_2_SCORE = 0
 WIN_SCORE = 5
 
-x_displacement = 0.0
-y_displacement = 0.0
-LINEAR_SPEED = 0.3
+led_pub = None
 
-motion_command = Twist()
-const_command_serv = None
-
-
-def odometry_callback():	# useless function for now, will get goal or not from other node
-    global x_displacement
-    global y_displacement
-    
-    x_displacement = data.pose.pose.position.x
-    y_displacement = data.pose.pose.position.y
 	
 def points_callback(data):
-	if data.data == 1:		#PATS CODE, NEED TO KNOW
+	if data.data == 1:
 		PADDLE_1_SCORE+=1
-	if data.data == 2:		#PATS CODE, NEED TO KNOW
+		led_pub.publish(Led.GREEN)
+	if data.data == 2:
 		PADDLE_2_SCORE+=1
+		led_pub.publish(Led.RED)
+	rospy.sleep(1)
+	led_pub.publish(Led.BLACK)
+
+
 
 def end():
 	if PADDLE_1_SCORE == WIN_SCORE:
@@ -37,35 +31,20 @@ def end():
 	else:
 		return False
 
-def startmove():
-	try:
-		motion_command.linear.x = LINEAR_SPEED
-		const_command_serv(motion_command)
-	except rospy.ServiceException, e:
-		rospy.logerr("Service call failed: %s",e)
-
-def stopmove():
-	try:
-		motion_command.linear.x = 0
-		motion_command.angular.z = 0
-		const_command_serv(motion_command)
-	except rospy.ServiceException, e:
-		rospy.logerr("Service call failed: %s",e)
 
 def start():
-	startmove()
 	while not end():
 		rospy.sleep(0.3)
-	stopmove()	
+
 
 def init():
     rospy.init_node('gamekeepernode',anonymous=True)
-    rospy.wait_for_service('constant_command')
     rospy.Subscriber('/odom',Odometry,odometry_callback)
-    rospy.Subscriber('/PATSCALLBACK',UInt32,points_callback) 	#NEED PAT FUNCTION/INFO
-    global const_command_serv
-    const_command_serv = rospy.ServiceProxy('constant_command', ConstantCommand)
+    rospy.Subscriber('/point_scored',UInt32,points_callback)
+    global led_pub
+    led_pub = rospy.Publisher('/mobile_base/commands/led1', Led, queue_size=10)
 	start()
+
 
 if __name__ == '__main__':
     try:

@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_generation
   tf
+  kobuki_msgs
 )
 
 find_package(OpenCV)
@@ -79,6 +80,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
    nav_msgs
    std_srvs
    geometry_msgs
+   kobuki_msgs
  )
 
 ###################################
