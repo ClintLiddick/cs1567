@@ -13,7 +13,7 @@ led_pub = None
 sound_pub = None
 
 def score_notif(led):
-    sound_pub.publish(Sound.CLEANINGSTART)
+    sound_pub.publish(Sound.OFF)
     for x in range(4):
         led_pub.publish(led)
         rospy.sleep(0.2)
@@ -62,6 +62,7 @@ def play():
     else:
         winner = 'NONE'
     rospy.loginfo('Winner: {}!'.format(winner))
+    led_pub.publish(Led.BLACK)
 
 
 def init():
